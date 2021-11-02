@@ -11,6 +11,10 @@ namespace Engine {
 	public:
 		PerspectiveCamera(float fov, float aspectRatio, float farZ, float nearZ = 0.1f);
 
+		virtual void SetProjection(float left, float right, float bottom, float top, float zFar, float zNear) override {
+			ENG_ERROR("Should not use function");
+			ENG_ASSERT(true, "Function not usable");
+		}
 		virtual void SetProjection(float fov, float aspectRatio, float farZ, float nearZ = 0.1f) override;
 
 		const glm::vec3& GetPosition() const override { return m_Position; }

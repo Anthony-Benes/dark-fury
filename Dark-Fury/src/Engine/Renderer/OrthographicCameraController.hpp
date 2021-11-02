@@ -26,7 +26,7 @@ namespace Engine {
 	class OrthographicCameraController
 	{
 	public:
-		OrthographicCameraController(float aspectRatio, bool rotation = false);
+		OrthographicCameraController(float aspectRatio, bool rotation = false, float zFar = -1.0f, float zNear = 1.0f);
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
@@ -49,6 +49,7 @@ namespace Engine {
 	private:
 		float m_AspectRatio;
 		float m_ZoomLevel = 1.0f;
+		glm::vec2 m_ZBounds;
 		OrthographicCameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
 

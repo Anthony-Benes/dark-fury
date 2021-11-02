@@ -9,9 +9,10 @@ namespace Engine {
 	class OrthographicCamera : public Camera
 	{
 	public:
-		OrthographicCamera(float left, float right, float bottom, float top);
+		OrthographicCamera(float left, float right, float bottom, float top, float zFar = -1.0f, float zNear = 1.0f);
 
-		virtual void SetProjection(float left, float right, float bottom, float top) override;
+		virtual void SetProjection(float left, float right, float bottom, float top, float zFar, float zNear = 1.0f) override;
+		virtual void SetProjection(float zoom, float aspectRatio, float farZ = -1.0f, float nearZ = 1.0f) override;
 
 		const glm::vec3& GetPosition() const override { return m_Position; }
 		void SetPosition(const glm::vec3& position) override { m_Position = position; RecalculateViewMatrix(); }

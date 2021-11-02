@@ -7,7 +7,7 @@
 
 EditorLayer::EditorLayer()
 	: Engine::Layer("Editor"),
-	m_CameraController(1280.0f / 720.0f, true),
+	m_CameraController(1280.0f / 720.0f, true, -10.0f, 1.0f),
 	m_Camera(45.0f, 1280.0f / 720.0f, 100.0f),
 	m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f }) {}
 
@@ -18,7 +18,7 @@ void EditorLayer::OnAttach()
 	m_CheckerboardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 	
 	Engine::FramebufferSpecification fbSpec;
-	fbSpec.Attachments = { Engine::FramebufferTextureFormat::RGBA8 };
+	fbSpec.Attachments = { Engine::FramebufferTextureFormat::RGBA8, Engine::FramebufferTextureFormat::DEPTH24STENCIL8 };
 	fbSpec.Width = 1280.0f;
 	fbSpec.Height = 720.0f;
 	m_Framebuffer = Engine::Framebuffer::Create(fbSpec);
@@ -37,7 +37,7 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 	Engine::Renderer2D::ResetStats();
 	{
 		ENG_PROFILE_SCOPE("Renderer Prep");
-		//m_Framebuffer->Bind();
+		m_Framebuffer->Bind();
 		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Engine::RenderCommand::Clear();
 	}
@@ -47,13 +47,12 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 		rotation += ts * 50.0f;
 
 		ENG_PROFILE_SCOPE("Renderer Draw");
-		//Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 		Engine::Renderer2D::BeginScene(m_Camera);
-		Engine::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f }, { 0.8f, 0.8f }, -45.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
-		Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f, 1.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, m_SquareColor);
 		Engine::Renderer2D::DrawQuad({ 0.0f, 0.0f, -5.0f }, { 20.0f, 20.0f }, m_CheckerboardTexture, 10.0f);
-		Engine::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, DEG_TO_RAD(rotation), m_CheckerboardTexture, 20.0f);
+		Engine::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, DEG_TO_RAD(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
+		Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+		Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.0f }, { 0.5f, 0.75f }, m_SquareColor);
+		Engine::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, -0.1f }, { 1.0f, 1.0f }, DEG_TO_RAD(rotation), m_CheckerboardTexture, 20.0f);
 		Engine::Renderer2D::EndScene();
 		
 		Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
@@ -62,12 +61,12 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 			for (float x = -5.0f; x < 5.0f; x += 0.5f)
 			{
 				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-				Engine::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
+				Engine::Renderer2D::DrawQuad({ x, y, -0.2f }, { 0.45f, 0.45f }, color);
 			}
 		}
 		Engine::Renderer2D::EndScene();
 		
-		//m_Framebuffer->Unbind();
+		m_Framebuffer->Unbind();
 	}
 }
 
@@ -76,7 +75,7 @@ void EditorLayer::OnImGuiRender()
 	ENG_PROFILE_FUNCTION();
 
 	// Note: Switch this to true to enable dockspace
-	static bool dockingEnabled = false;
+	static bool dockingEnabled = true;
 	if (dockingEnabled)
 	{
 		static bool dockspaceOpen = true;
@@ -150,7 +149,7 @@ void EditorLayer::OnImGuiRender()
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ 640.0f, 360.0f });
+		ImGui::Image((void*)textureID, ImVec2{ 640.0f, 360.0f }, {0, 1}, {1, 0});
 		ImGui::End();
 
 		ImGui::End();
@@ -169,7 +168,7 @@ void EditorLayer::OnImGuiRender()
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ 640.0f, 360.0f });
+		ImGui::Image((void*)textureID, ImVec2{ 640.0f, 360.0f }, { 0, 1 }, { 1, 0 });
 		ImGui::End();
 	}
 }

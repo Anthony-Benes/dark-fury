@@ -2,8 +2,6 @@
 #include "Engine/Core/EntryPoint.h"
 
 #include "EditorLayer.hpp"
-	
-static bool viewFPS = false;
 
 class ClearLayer : public Engine::Layer
 {
@@ -21,7 +19,7 @@ private:
 class Editor : public Engine::Application
 {
 public:
-	Editor(Engine::ApplicationCommandLineArgs args) {
+	Editor(Engine::ApplicationCommandLineArgs args) : Engine::Application("Editor", args) {
 		PushLayer(new ClearLayer({ 0.2f, 0.2f, 0.2f, 1.0f }));
 		PushLayer(new EditorLayer());
 	};

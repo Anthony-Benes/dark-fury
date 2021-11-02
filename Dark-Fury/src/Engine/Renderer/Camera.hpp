@@ -16,7 +16,8 @@ namespace Engine {
 		virtual const glm::vec3& GetPosition() const = 0;
 		virtual void SetPosition(const glm::vec3& position) = 0;
 
-		virtual void SetProjection(float left, float right, float bottom, float top) = 0;
+		virtual void SetProjection(float left, float right, float bottom, float top, float zFar, float zNear) = 0;
+		virtual void SetProjection(float fov, float aspectRatio, float farZ, float nearZ) = 0;
 
 		const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }

@@ -6,10 +6,11 @@
 
 namespace Engine {
 
-	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
+	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation, float zFar, float zNear)
 		: m_AspectRatio(aspectRatio),
 		m_Bounds({ -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel }),
-		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top),
+		m_ZBounds({zNear, zFar}),
+		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, m_ZBounds.y, m_ZBounds.x),
 		m_Rotation(rotation) {
 	}
 
@@ -77,7 +78,7 @@ namespace Engine {
 	void OrthographicCameraController::CalculateView()
 	{
 		m_Bounds.ReSize(m_AspectRatio, m_ZoomLevel);
-		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
+		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, m_ZBounds.y, m_ZBounds.x);
 	}
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
