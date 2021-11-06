@@ -17,6 +17,7 @@ IncludeDir["Glad"] = "Dark-Fury/ext_lib/Glad/include"
 IncludeDir["ImGui"] = "Dark-Fury/ext_lib/imgui"
 IncludeDir["glm"] = "Dark-Fury/ext_lib/glm"
 IncludeDir["stb_image"] = "Dark-Fury/ext_lib/stb_image"
+IncludeDir["entt"] = "Dark-Fury/ext_lib/entt/include"
 
 group "Dependencies"
 include "Dark-Fury/ext_lib/GLFW"
@@ -55,7 +56,8 @@ project "Dark-Fury"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -109,7 +111,8 @@ project "SampleGame"
 	{
 		"Dark-Fury/src",
 		"Dark-Fury/ext_lib",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -160,7 +163,8 @@ project "StarterGame"
 	{
 		"Dark-Fury/src",
 		"Dark-Fury/ext_lib",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -211,7 +215,8 @@ project "Editor"
 	{
 		"Dark-Fury/src",
 		"Dark-Fury/ext_lib",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
