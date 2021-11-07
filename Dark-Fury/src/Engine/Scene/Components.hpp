@@ -6,7 +6,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "Engine/Scene/SceneCamera.hpp"
+#include "Engine/Scene/CameraProjection.hpp"
 #include "Engine/Renderer/Texture.hpp"
 
 namespace Engine {
@@ -56,11 +56,17 @@ namespace Engine {
 	
 	struct CameraComponent
 	{
-		SceneCamera Camera;
-		bool Primary = true; // TODO: think about moving to Scene
+		CameraProjection Camera;
+		bool Primary = true;
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
+		CameraComponent(uint32_t width, uint32_t height, float zFar = -10.0f, float zNear = 0.0f)
+			: Camera(width, height, zFar, zNear) {}
+		CameraComponent(float aspectRatio, float fov, float zNear, float zFar, CameraProjection::ProjectionType pType = CameraProjection::ProjectionType::Perspective)
+			: Camera(aspectRatio, fov, zNear, zFar, pType) {}
+		CameraComponent(CameraProjection cam)
+			: Camera(cam) {}
 		CameraComponent(const CameraComponent&) = default;
 	};
 

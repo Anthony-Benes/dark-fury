@@ -34,6 +34,5 @@
 #include "Engine/Renderer/SubTexture2D.hpp"
 #include "Engine/Renderer/VertexArray.hpp"
 
-#include "Engine/Renderer/OrthographicCamera.hpp"
-#include "Engine/Renderer/PerspectiveCamera.hpp"
+#include "Engine/Renderer/Camera.hpp"
 // -----------------------------------

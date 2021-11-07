@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 
 namespace Engine {
-
+	/*
 	class EditorCamera : public Camera
 	{
 	public:
@@ -63,5 +63,5 @@ namespace Engine {
 
 		float m_ViewportWidth = 1280, m_ViewportHeight = 720;
 	};
-
+	*/
 }

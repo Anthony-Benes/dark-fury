@@ -11,7 +11,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 namespace Engine {
-
+	/*
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
 		: m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClip(nearClip), m_FarClip(farClip), Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 	{
@@ -140,5 +140,5 @@ namespace Engine {
 	{
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
-
+	*/
 }

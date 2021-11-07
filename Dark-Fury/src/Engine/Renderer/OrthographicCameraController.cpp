@@ -7,10 +7,9 @@
 namespace Engine {
 
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation, float zFar, float zNear)
-		: m_AspectRatio(aspectRatio),
-		m_Bounds({ -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel }),
+		: m_Camera(aspectRatio, 1.0f, zFar, zNear, CameraProjection::ProjectionType::Orthographic),
+		m_AspectRatio(aspectRatio),
 		m_ZBounds({zNear, zFar}),
-		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, m_ZBounds.y, m_ZBounds.x),
 		m_Rotation(rotation) {
 	}
 
@@ -52,10 +51,10 @@ namespace Engine {
 			else if (m_CameraRotation <= -180.0f)
 				m_CameraRotation += 360.0f;
 
-			m_Camera.SetRotation(m_CameraRotation);
+			m_Camera.GetTransformComponent()->Rotation = glm::vec3{ 0.0f, 0.0f, DEG_TO_RAD(m_CameraRotation) };
 		}
 
-		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.GetTransformComponent()->Translation = m_CameraPosition;
 
 		m_CameraTranslationSpeed = m_ZoomLevel;
 	}
@@ -77,8 +76,7 @@ namespace Engine {
 
 	void OrthographicCameraController::CalculateView()
 	{
-		m_Bounds.ReSize(m_AspectRatio, m_ZoomLevel);
-		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, m_ZBounds.y, m_ZBounds.x);
+		m_Camera.SetViewOrthographic((m_AspectRatio * m_ZoomLevel * 2.0f), (m_ZoomLevel * 2.0f), m_ZBounds.y, m_ZBounds.x);
 	}
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)

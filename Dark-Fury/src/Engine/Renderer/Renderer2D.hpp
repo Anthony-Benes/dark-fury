@@ -15,7 +15,7 @@ namespace Engine {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const Camera& camera);
+		static void BeginScene(Camera& camera);
 		static void EndScene();
 		static void Flush();
 

@@ -14,7 +14,7 @@ public:
 	void OnEvent(Engine::Event& event) override;
 private:
 	Engine::OrthographicCameraController m_CameraController;
-	Engine::PerspectiveCamera m_Camera;
+	Engine::Camera m_Camera;
 
 	// Temp
 	Engine::Ref<Engine::VertexArray> m_SquareVA;
@@ -27,4 +27,9 @@ private:
 	bool m_ViewHovered = false;
 	glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 	glm::vec4 m_SquareColor;
+
+	Engine::Ref<Engine::Scene> m_ActiveScene;
+	Engine::Entity m_SquareEntity;
+
+	bool useOrtho = false;
 };

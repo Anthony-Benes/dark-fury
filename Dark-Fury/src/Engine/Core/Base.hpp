@@ -40,6 +40,7 @@
 
 #define ENG_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
+#define MAX_FLOAT			(3.40282e+025f)
 #define DEG_TO_RAD(degrees)	((degrees) * 0.017453f)
 
 namespace Engine {

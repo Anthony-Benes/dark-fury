@@ -1,8 +1,9 @@
 #include "engpch.h"
 #include "Engine/Scene/Scene.hpp"
 
-#include "Engine/Scene/Components.hpp"
+#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Renderer2D.hpp"
+#include "Engine/Scene/Components.hpp"
 
 #include <glm/glm.hpp>
 
@@ -27,8 +28,8 @@ namespace Engine {
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
 		// Render 2D
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
+		CameraProjection* mainCamera = nullptr;
+		TransformComponent cameraTransform;
 		{
 			auto view = m_Registry.view<TransformComponent, CameraComponent>();
 			for (auto entity : view)
@@ -38,7 +39,7 @@ namespace Engine {
 				if (camera.Primary)
 				{
 					mainCamera = &camera.Camera;
-					cameraTransform = transform.GetTransform();
+					cameraTransform = transform;
 					break;
 				}
 			}
@@ -46,7 +47,7 @@ namespace Engine {
 
 		if (mainCamera)
 		{
-			Renderer2D::BeginScene(*mainCamera);
+			Renderer2D::BeginScene(Camera(*mainCamera, cameraTransform));
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
@@ -60,7 +61,7 @@ namespace Engine {
 		}
 
 	}
-
+	/*
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
@@ -75,7 +76,7 @@ namespace Engine {
 
 		Renderer2D::EndScene();
 	}
-
+	*/
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportWidth = width;

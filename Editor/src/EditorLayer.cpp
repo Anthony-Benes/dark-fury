@@ -7,8 +7,9 @@
 
 EditorLayer::EditorLayer()
 	: Engine::Layer("Editor"),
-	m_CameraController(1280.0f / 720.0f, true, -10.0f, 1.0f),
-	m_Camera(45.0f, 1280.0f / 720.0f, 100.0f),
+	m_CameraController(1280.0f / 720.0f, true, -10.0f),
+	//m_Camera(32, 18, -10.0f),
+	m_Camera(1280.0f / 720.0f, 45.0f, 0.1f, 100.0f),
 	m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f }) {}
 
 void EditorLayer::OnAttach()
@@ -23,12 +24,18 @@ void EditorLayer::OnAttach()
 	fbSpec.Height = 720.0f;
 	m_Framebuffer = Engine::Framebuffer::Create(fbSpec);
 
-	m_Camera.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	m_ActiveScene = Engine::CreateRef<Engine::Scene>();
+	m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
+	m_SquareEntity.AddComponent<Engine::SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+	m_Camera.GetTransformComponent()->Translation = glm::vec3{0.0f, 0.0f, 5.0f};
 }
 
 void EditorLayer::OnUpdate(Engine::Timestep ts)
 {
 	ENG_PROFILE_FUNCTION();
+
+	m_Camera.GetTransformComponent()->Translation = glm::vec3{ 0.0f, 0.0f, 5.0f };
 
 	// Resize
 	{
@@ -39,7 +46,13 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_Camera.SetProjection(45.0f, (m_ViewportSize.x / m_ViewportSize.y), 100.0f, 0.1f);
+
+			if (m_Camera.GetProjectionType() == Engine::CameraProjection::ProjectionType::Orthographic) {
+				m_Camera.SetViewOrthographic((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, -10.0f);
+			}
+			else {
+				m_Camera.SetViewPerspective((m_ViewportSize.x / m_ViewportSize.y), 45.0f, 0.1f, 100.0f);
+			}
 		}
 	}
 
@@ -65,9 +78,9 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 		Engine::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, DEG_TO_RAD(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
 		Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 		Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.0f }, { 0.5f, 0.75f }, m_SquareColor);
-		Engine::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, -0.1f }, { 1.0f, 1.0f }, DEG_TO_RAD(rotation), m_CheckerboardTexture, 20.0f);
+		Engine::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, -0.1f }, { 1.0f, 1.0f }, DEG_TO_RAD(rotation), m_CheckerboardTexture, 10.0f);
 		Engine::Renderer2D::EndScene();
-		
+		//*
 		Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 		for (float y = -5.0f; y < 5.0f; y += 0.5f)
 		{
@@ -78,7 +91,7 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 			}
 		}
 		Engine::Renderer2D::EndScene();
-		
+		/**/
 		m_Framebuffer->Unbind();
 	}
 }
@@ -156,6 +169,8 @@ void EditorLayer::OnImGuiRender()
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
+
+		ImGui::Checkbox("Use Old Perspective", &useOrtho);
 	}
 	ImGui::End();
 

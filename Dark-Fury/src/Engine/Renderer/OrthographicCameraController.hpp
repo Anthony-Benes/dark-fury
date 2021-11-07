@@ -1,27 +1,12 @@
 #pragma once
 
-#include "Engine/Renderer/OrthographicCamera.hpp"
+#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/Timestep.hpp"
 
 #include "Engine/Events/ApplicationEvent.hpp"
 #include "Engine/Events/MouseEvent.hpp"
 
 namespace Engine {
-
-	struct OrthographicCameraBounds {
-		float Left;
-		float Right;
-		float Bottom;
-		float Top;
-		float GetWidth() { return Right - Left; }
-		float GetHeight() { return Top - Bottom; }
-		void ReSize(float aspectRatio, float zoom) {
-			Left = -aspectRatio * zoom;
-			Right = aspectRatio * zoom;
-			Bottom = -zoom;
-			Top = zoom;
-		}
-	};
 
 	class OrthographicCameraController
 	{
@@ -33,9 +18,8 @@ namespace Engine {
 
 		void OnResize(float width, float height);
 
-		const OrthographicCameraBounds& GetBounds() const { return m_Bounds; }
-		OrthographicCamera& GetCamera() { return m_Camera; }
-		const OrthographicCamera& GetCamera() const { return m_Camera; }
+		Camera& GetCamera() { return m_Camera; }
+		const Camera& GetCamera() const { return m_Camera; }
 
 		float GetZoomLevel() const { return m_ZoomLevel; }
 		void SetZoomLevel(float level) {
@@ -47,11 +31,10 @@ namespace Engine {
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 	private:
+		Camera m_Camera;
 		float m_AspectRatio;
 		float m_ZoomLevel = 1.0f;
 		glm::vec2 m_ZBounds;
-		OrthographicCameraBounds m_Bounds;
-		OrthographicCamera m_Camera;
 
 		bool m_Rotation;
 

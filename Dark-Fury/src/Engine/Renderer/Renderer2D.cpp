@@ -212,7 +212,7 @@ namespace Engine {
 		delete[] s_Data.QuadVertexBufferBase;
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera)
+	void Renderer2D::BeginScene(Camera& camera)
 	{
 		ENG_PROFILE_FUNCTION();
 
