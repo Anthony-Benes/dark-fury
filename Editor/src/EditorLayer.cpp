@@ -8,15 +8,11 @@
 EditorLayer::EditorLayer()
 	: Engine::Layer("Editor"),
 	m_CameraController(1280.0f / 720.0f, true, -10.0f),
-	//m_Camera(32, 18, -10.0f),
-	m_Camera(1280.0f / 720.0f, 45.0f, 0.1f, 100.0f),
-	m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f }) {}
+	m_SquareColor({ 1.0f, 1.0f, 1.0f, 1.0f }) {}
 
 void EditorLayer::OnAttach()
 {
 	ENG_PROFILE_FUNCTION();
-
-	m_CheckerboardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 	
 	Engine::FramebufferSpecification fbSpec;
 	fbSpec.Attachments = { Engine::FramebufferTextureFormat::RGBA8, Engine::FramebufferTextureFormat::DEPTH24STENCIL8 };
@@ -24,18 +20,60 @@ void EditorLayer::OnAttach()
 	fbSpec.Height = 720.0f;
 	m_Framebuffer = Engine::Framebuffer::Create(fbSpec);
 
-	m_ActiveScene = Engine::CreateRef<Engine::Scene>();
-	m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
-	m_SquareEntity.AddComponent<Engine::SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+	m_TextureCB = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 
-	m_Camera.GetTransformComponent()->Translation = glm::vec3{0.0f, 0.0f, 5.0f};
+	m_ActiveScene = Engine::CreateRef<Engine::Scene>();
+
+	m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
+	m_SquareEntity.AddComponent<Engine::SpriteRendererComponent>(m_SquareColor);
+
+	m_Camera = m_ActiveScene->CreateEntity("Main Camera");
+	m_Camera.AddComponent<Engine::CameraComponent>(Engine::CameraProjection((uint32_t)16, (uint32_t)9, -10.0f, 0.0f));
+
+	auto& squareTransform = m_SquareEntity.GetComponent<Engine::TransformComponent>();
+	squareTransform.Scale = glm::vec3{ 5.0f, 5.0f, 1.0f };
+	squareTransform.Translation = glm::vec3{ 0.0f, 0.0f, -0.5f };
+	auto& squareSprite = m_SquareEntity.GetComponent<Engine::SpriteRendererComponent>();
+	squareSprite.Texture = m_TextureCB;
+
+	auto& cameraTransform = m_Camera.GetComponent<Engine::TransformComponent>();
+	cameraTransform.Translation = glm::vec3{ 0.0f, 0.0f, 1.0f };
+
+	class CameraController : public Engine::ScriptableEntity
+	{
+	public:
+		virtual void OnCreate() override
+		{
+		}
+
+		virtual void OnDestroy() override
+		{
+		}
+
+		virtual void OnUpdate(Engine::Timestep ts) override
+		{
+			auto& translation = GetComponent<Engine::TransformComponent>().Translation;
+			float speed = 5.0f;
+
+			if (Engine::Input::IsKeyPressed(Engine::Key::A))
+				translation.x -= speed * ts;
+			if (Engine::Input::IsKeyPressed(Engine::Key::D))
+				translation.x += speed * ts;
+			if (Engine::Input::IsKeyPressed(Engine::Key::W))
+				translation.y += speed * ts;
+			if (Engine::Input::IsKeyPressed(Engine::Key::S))
+				translation.y -= speed * ts;
+		}
+	};
+
+	m_Camera.AddComponent<Engine::NativeScriptComponent>().Bind<CameraController>();
+
+	//m_CameraController = Engine::OrthographicCameraController(Engine::Camera(m_Camera.GetComponent<Engine::CameraComponent>(), cameraTransform));
 }
 
 void EditorLayer::OnUpdate(Engine::Timestep ts)
 {
 	ENG_PROFILE_FUNCTION();
-
-	m_Camera.GetTransformComponent()->Translation = glm::vec3{ 0.0f, 0.0f, 5.0f };
 
 	// Resize
 	{
@@ -47,18 +85,13 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
 
-			if (m_Camera.GetProjectionType() == Engine::CameraProjection::ProjectionType::Orthographic) {
-				m_Camera.SetViewOrthographic((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, -10.0f);
-			}
-			else {
-				m_Camera.SetViewPerspective((m_ViewportSize.x / m_ViewportSize.y), 45.0f, 0.1f, 100.0f);
-			}
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 	}
 
 	// Update
 	if (m_ViewFocused) { m_CameraController.OnUpdate(ts); }
-
+	
 	// Render
 	Engine::Renderer2D::ResetStats();
 	{
@@ -69,29 +102,10 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 	}
 
 	{
-		static float rotation = 0.0f;
-		rotation += ts * 50.0f;
-
 		ENG_PROFILE_SCOPE("Renderer Draw");
-		Engine::Renderer2D::BeginScene(m_Camera);
-		Engine::Renderer2D::DrawQuad({ 0.0f, 0.0f, -5.0f }, { 20.0f, 20.0f }, m_CheckerboardTexture, 10.0f);
-		Engine::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, DEG_TO_RAD(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
-		Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.0f }, { 0.5f, 0.75f }, m_SquareColor);
-		Engine::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, -0.1f }, { 1.0f, 1.0f }, DEG_TO_RAD(rotation), m_CheckerboardTexture, 10.0f);
-		Engine::Renderer2D::EndScene();
-		//*
-		Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
-		for (float y = -5.0f; y < 5.0f; y += 0.5f)
-		{
-			for (float x = -5.0f; x < 5.0f; x += 0.5f)
-			{
-				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-				Engine::Renderer2D::DrawQuad({ x, y, -0.2f }, { 0.45f, 0.45f }, color);
-			}
-		}
-		Engine::Renderer2D::EndScene();
-		/**/
+
+		m_ActiveScene->OnUpdateRuntime(ts);
+
 		m_Framebuffer->Unbind();
 	}
 }
@@ -99,7 +113,7 @@ void EditorLayer::OnUpdate(Engine::Timestep ts)
 void EditorLayer::OnImGuiRender()
 {
 	ENG_PROFILE_FUNCTION();
-
+	
 	static bool dockspaceOpen = true;
 	static bool opt_fullscreen_persistant = true;
 	bool opt_fullscreen = opt_fullscreen_persistant;
@@ -169,11 +183,8 @@ void EditorLayer::OnImGuiRender()
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
-
-		ImGui::Checkbox("Use Old Perspective", &useOrtho);
 	}
 	ImGui::End();
-
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
 	ImGui::Begin("Viewport");

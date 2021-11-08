@@ -55,7 +55,6 @@ namespace Engine {
 		if (m_ProjType == ProjectionType::Orthographic) {
 			if (m_FarClip == MAX_FLOAT) { m_FarClip = -DefaultFarFloat; }
 			float xHalf = m_FOVorZoom * m_AspectRatio;
-			ENG_CORE_TRACE("%f, %f", m_AspectRatio, m_FOVorZoom);
 			m_Projection = glm::ortho(-xHalf, xHalf, -m_FOVorZoom, m_FOVorZoom, -m_NearClip, -m_FarClip);
 		}
 		else {

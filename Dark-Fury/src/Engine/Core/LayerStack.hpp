@@ -1,6 +1,5 @@
 #pragma once
 
-#include "engpch.h"
 #include "Engine/Core/Base.hpp"
 #include "Engine/Core/Layer.hpp"
 

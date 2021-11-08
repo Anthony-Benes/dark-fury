@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event.hpp"
+#include "Engine/Events/Event.hpp"
 #include "Engine/Core/MouseCodes.hpp"
 
 namespace Engine {

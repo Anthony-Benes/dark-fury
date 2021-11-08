@@ -3,10 +3,10 @@
 #include "Engine/Core/Base.hpp"
 #include "Engine/Core/Window.hpp"
 #include "Engine/Core/LayerStack.hpp"
+#include "Engine/Core/Timestep.hpp"
+
 #include "Engine/Events/Event.hpp"
 #include "Engine/Events/ApplicationEvent.hpp"
-
-#include "Engine/Core/Timestep.hpp"
 
 #include "Engine/ImGui/ImGuiLayer.hpp"
 

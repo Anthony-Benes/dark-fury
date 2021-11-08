@@ -19,7 +19,6 @@
 
 #include "Engine/Scene/Scene.hpp"
 #include "Engine/Scene/Entity.hpp"
-//#include "Engine/Scene/ScriptableEntity.hpp"
 #include "Engine/Scene/Components.hpp"
 
 // ---Renderer------------------------

@@ -7,7 +7,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "Engine/Scene/CameraProjection.hpp"
+#include "Engine/Scene/Entity.hpp"
 #include "Engine/Renderer/Texture.hpp"
+
 
 namespace Engine {
 
@@ -68,6 +70,23 @@ namespace Engine {
 		CameraComponent(CameraProjection cam)
 			: Camera(cam) {}
 		CameraComponent(const CameraComponent&) = default;
+	};
+
+	class ScriptableEntity;
+
+	struct NativeScriptComponent
+	{
+		ScriptableEntity* Instance = nullptr;
+
+		ScriptableEntity* (*InstantiateScript)();
+		void (*DestroyScript)(NativeScriptComponent*);
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
+		}
 	};
 
 }

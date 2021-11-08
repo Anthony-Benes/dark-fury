@@ -12,6 +12,7 @@ namespace Engine {
 	{
 	public:
 		OrthographicCameraController(float aspectRatio, bool rotation = false, float zFar = -1.0f, float zNear = 1.0f);
+		OrthographicCameraController(Camera newCamera) : m_Camera(newCamera) {}
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);

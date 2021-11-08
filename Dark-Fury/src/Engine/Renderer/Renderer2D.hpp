@@ -5,8 +5,6 @@
 
 #include "Engine/Renderer/Camera.hpp"
 
-//#include "Engine/Scene/Components.hpp"
-
 namespace Engine {
 
 	class Renderer2D
