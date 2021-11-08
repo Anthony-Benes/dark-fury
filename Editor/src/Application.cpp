@@ -21,7 +21,7 @@ class Editor : public Engine::Application
 public:
 	Editor(Engine::ApplicationCommandLineArgs args) : Engine::Application("Editor", args) {
 		PushLayer(new ClearLayer({ 0.2f, 0.2f, 0.2f, 1.0f }));
-		PushLayer(new EditorLayer());
+		PushLayer(new Engine::EditorLayer());
 	};
 	~Editor() {};
 };

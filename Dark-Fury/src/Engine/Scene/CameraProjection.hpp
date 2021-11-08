@@ -18,6 +18,7 @@ namespace Engine {
 		~CameraProjection() = default;
 
 		const ProjectionType& GetType() const { return m_ProjType; }
+		void SetProjectionType(ProjectionType projType);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
@@ -27,14 +28,38 @@ namespace Engine {
 
 		const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
 
+		void SetFOV(float newFOV) {
+			if (m_ProjType == ProjectionType::Orthographic) { m_Zoom = newFOV; }
+			else { m_FOV = newFOV; }
+			RecalculateProjection();
+		}
+		const float& GetFOV() const { return m_ProjType == ProjectionType::Orthographic ? m_Zoom : m_FOV; }
+		void SetNearClip(float nearClip) {
+			if (m_ProjType == ProjectionType::Orthographic) { m_NearOrtho = nearClip; }
+			else { m_NearPsp = nearClip; }
+			RecalculateProjection();
+		}
+		const float& GetNearClip() const { return m_ProjType == ProjectionType::Orthographic ? m_NearOrtho : m_NearPsp; }
+		void SetFarClip(float farClip) {
+			if (m_ProjType == ProjectionType::Orthographic) { m_FarOrtho = farClip; }
+			else { m_FarPsp = farClip; }
+			RecalculateProjection();
+		}
+		const float& GetFarClip() const { return m_ProjType == ProjectionType::Orthographic ? m_FarOrtho : m_FarPsp; }
+
 	private:
 		void RecalculateProjection();
 
 		glm::mat4 m_Projection;
 		ProjectionType m_ProjType;
 		float m_AspectRatio;
-		float m_FOVorZoom;
-		float m_NearClip;
-		float m_FarClip;
+
+		float m_FOV = 45.0f;
+		float m_NearPsp = 0.01f;
+		float m_FarPsp = 100.0f;
+
+		float m_Zoom = 1.0f;
+		float m_NearOrtho = 1.0f;
+		float m_FarOrtho = -1.0f;
 	};
 }

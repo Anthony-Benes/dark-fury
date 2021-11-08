@@ -11,15 +11,26 @@ namespace Engine {
 	CameraProjection::CameraProjection(float aspectRatio, float fov, float zNear, float zFar, ProjectionType projType)
 		: m_Projection(glm::mat4(1.0f)),
 		  m_ProjType(projType),
-		  m_AspectRatio(aspectRatio),
-		  m_FOVorZoom(fov),
-		  m_NearClip(zNear),
-		  m_FarClip(zFar) {
+		  m_AspectRatio(aspectRatio) {
 		if (projType == ProjectionType::Orthographic) {
-			SetViewOrthographic((m_AspectRatio * m_FOVorZoom * 2.0f), (m_FOVorZoom * 2.0f), m_FarClip, m_NearClip);
+			m_Zoom = fov;
+			m_NearOrtho = zNear;
+			m_FarOrtho = zFar;
+			SetViewOrthographic((m_AspectRatio * m_Zoom * 2.0f), (m_Zoom * 2.0f), m_FarOrtho, m_NearOrtho);
 		}
 		else {
-			SetViewPerspective(m_AspectRatio, m_FOVorZoom, m_NearClip, m_FarClip);
+			m_FOV = fov;
+			m_NearPsp = zNear;
+			m_FarPsp = zFar;
+			SetViewPerspective(m_AspectRatio, m_FOV, m_NearPsp, m_FarPsp);
+		}
+	}
+
+	void CameraProjection::SetProjectionType(ProjectionType projType)
+	{
+		if (projType != m_ProjType) {
+			m_ProjType = projType;
+			RecalculateProjection();
 		}
 	}
 
@@ -34,9 +45,9 @@ namespace Engine {
 	{
 		m_ProjType = ProjectionType::Orthographic;
 		m_AspectRatio = width / height;
-		m_FOVorZoom = height / 2.0f;
-		m_NearClip = zNear == MAX_FLOAT ? m_NearClip : zNear;
-		m_FarClip = zFar == MAX_FLOAT ? m_FarClip : zFar;
+		m_Zoom = height / 2.0f;
+		m_NearOrtho = zNear == MAX_FLOAT ? m_NearOrtho : zNear;
+		m_FarOrtho = zFar == MAX_FLOAT ? m_FarOrtho : zFar;
 		RecalculateProjection();
 	}
 
@@ -44,21 +55,21 @@ namespace Engine {
 	{
 		m_ProjType = ProjectionType::Perspective;
 		m_AspectRatio = aspectRatio;
-		m_FOVorZoom = fov;
-		m_NearClip = zNear == MAX_FLOAT ? m_NearClip : zNear;
-		m_FarClip = zFar == MAX_FLOAT ? m_FarClip : zFar;
+		m_FOV = fov;
+		m_NearPsp = zNear == MAX_FLOAT ? m_NearPsp : zNear;
+		m_FarPsp = zFar == MAX_FLOAT ? m_FarPsp : zFar;
 		RecalculateProjection();
 	}
 
 	void CameraProjection::RecalculateProjection()
 	{
 		if (m_ProjType == ProjectionType::Orthographic) {
-			if (m_FarClip == MAX_FLOAT) { m_FarClip = -DefaultFarFloat; }
-			float xHalf = m_FOVorZoom * m_AspectRatio;
-			m_Projection = glm::ortho(-xHalf, xHalf, -m_FOVorZoom, m_FOVorZoom, -m_NearClip, -m_FarClip);
+			if (m_FarOrtho == MAX_FLOAT) { m_FarOrtho = -DefaultFarFloat; }
+			float xHalf = m_Zoom * m_AspectRatio;
+			m_Projection = glm::ortho(-xHalf, xHalf, -m_Zoom, m_Zoom, -m_NearOrtho, -m_FarOrtho);
 		}
 		else {
-			m_Projection = glm::perspective(DEG_TO_RAD(m_FOVorZoom), m_AspectRatio, m_NearClip, m_FarClip);
+			m_Projection = glm::perspective(DEG_TO_RAD(m_FOV), m_AspectRatio, m_NearPsp, m_FarPsp);
 		}
 	}
 

@@ -63,7 +63,9 @@ namespace Engine {
 			for (auto entity : group) {
 				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TilingFactor, sprite.Color);
+				if (sprite.Texture) { Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TilingFactor, sprite.Color); }
+				else { Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color); }
+				
 				//Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 
