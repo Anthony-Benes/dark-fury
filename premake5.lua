@@ -18,11 +18,13 @@ IncludeDir["ImGui"] = "Dark-Fury/ext_lib/imgui"
 IncludeDir["glm"] = "Dark-Fury/ext_lib/glm"
 IncludeDir["stb_image"] = "Dark-Fury/ext_lib/stb_image"
 IncludeDir["entt"] = "Dark-Fury/ext_lib/entt/include"
+IncludeDir["yaml_cpp"] = "Dark-Fury/ext_lib/yaml-cpp/include"
 
 group "Dependencies"
 include "Dark-Fury/ext_lib/GLFW"
 include "Dark-Fury/ext_lib/Glad"
 include "Dark-Fury/ext_lib/imgui"
+include "Dark-Fury/ext_lib/yaml-cpp"
 group ""
 
 project "Dark-Fury"
@@ -57,14 +59,16 @@ project "Dark-Fury"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
-		"ImGui"
+		"ImGui",
+		"yaml-cpp"
 	}
 
 	filter "system:windows"

@@ -274,7 +274,7 @@ namespace Engine {
 			ImGui::Checkbox("Primary", &component.Primary);
 
 			const char* projectionTypeStrings[] = { "Orthographic", "Perspective" };
-			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetType()];
+			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
 			if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
 			{
 				for (int i = 0; i < 2; i++)
@@ -293,14 +293,14 @@ namespace Engine {
 				ImGui::EndCombo();
 			}
 
-			if (camera.GetType() == CameraProjection::ProjectionType::Perspective)
+			if (camera.GetProjectionType() == CameraProjection::ProjectionType::Perspective)
 			{
 				float perspectiveVerticalFov = camera.GetFOV();
 				if (ImGui::DragFloat("Vertical FOV", &perspectiveVerticalFov))
 					camera.SetFOV(perspectiveVerticalFov);
 			}
 
-			if (camera.GetType() == CameraProjection::ProjectionType::Orthographic)
+			if (camera.GetProjectionType() == CameraProjection::ProjectionType::Orthographic)
 			{
 				float orthoSize = camera.GetFOV();
 				if (ImGui::DragFloat("Size", &orthoSize))

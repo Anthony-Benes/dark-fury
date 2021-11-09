@@ -17,7 +17,7 @@ namespace Engine {
 		CameraProjection(float aspectRatio, float fov, float zNear, float zFar, ProjectionType projType = ProjectionType::Perspective);
 		~CameraProjection() = default;
 
-		const ProjectionType& GetType() const { return m_ProjType; }
+		const ProjectionType& GetProjectionType() const { return m_ProjType; }
 		void SetProjectionType(ProjectionType projType);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
@@ -33,19 +33,31 @@ namespace Engine {
 			else { m_FOV = newFOV; }
 			RecalculateProjection();
 		}
+		void SetFOVPerspective(float newFOV) { m_FOV = newFOV; RecalculateProjection(); }
+		void SetFOVOrthographic(float newFOV) { m_Zoom = newFOV; RecalculateProjection(); }
 		const float& GetFOV() const { return m_ProjType == ProjectionType::Orthographic ? m_Zoom : m_FOV; }
+		const float& GetFOVPerspective() const { return m_FOV; }
+		const float& GetFOVOrthographic() const { return m_Zoom; }
 		void SetNearClip(float nearClip) {
 			if (m_ProjType == ProjectionType::Orthographic) { m_NearOrtho = nearClip; }
 			else { m_NearPsp = nearClip; }
 			RecalculateProjection();
 		}
+		void SetNearClipPerspective(float nearClip) { m_NearPsp = nearClip; RecalculateProjection(); }
+		void SetNearClipOrthographic(float nearClip) { m_NearOrtho = nearClip; RecalculateProjection(); }
 		const float& GetNearClip() const { return m_ProjType == ProjectionType::Orthographic ? m_NearOrtho : m_NearPsp; }
+		const float& GetNearClipPerspective() const { return m_NearPsp; }
+		const float& GetNearClipOrthographic() const { return m_NearOrtho; }
 		void SetFarClip(float farClip) {
 			if (m_ProjType == ProjectionType::Orthographic) { m_FarOrtho = farClip; }
 			else { m_FarPsp = farClip; }
 			RecalculateProjection();
 		}
+		void SetFarClipPerspective(float farClip) { m_FarPsp = farClip; RecalculateProjection(); }
+		void SetFarClipOrthographic(float farClip) { m_FarOrtho = farClip; RecalculateProjection(); }
 		const float& GetFarClip() const { return m_ProjType == ProjectionType::Orthographic ? m_FarOrtho : m_FarPsp; }
+		const float& GetFarClipPerspective() const { return m_FarPsp; }
+		const float& GetFarClipOrthographic() const { return m_FarOrtho; }
 
 	private:
 		void RecalculateProjection();

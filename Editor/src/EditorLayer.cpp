@@ -1,5 +1,7 @@
 #include "EditorLayer.hpp"
 
+#include "Engine/Scene/SceneSerializer.hpp"
+
 #include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -173,6 +175,18 @@ namespace Engine {
 				// Disabling fullscreen would allow the window to be moved to the front of other windows, 
 				// which we can't undo at the moment without finer window depth/z control.
 				//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+
+				if (ImGui::MenuItem("Serialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Serialize("assets/scenes/Example.fury");
+				}
+
+				if (ImGui::MenuItem("Deserialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Deserialize("assets/scenes/Example.fury");
+				}
 
 				if (ImGui::MenuItem("Exit")) Engine::Application::Get().Close();
 				ImGui::EndMenu();

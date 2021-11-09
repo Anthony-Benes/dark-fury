@@ -20,7 +20,7 @@ namespace Engine {
 		Camera(TransformComponent& cameraTransform, float aspectRatio, float fov, float zNear, float zFar, CameraProjection::ProjectionType pType = CameraProjection::ProjectionType::Perspective);
 		~Camera() = default;
 
-		const CameraProjection::ProjectionType& GetProjectionType() const { return m_Projection->Camera.GetType(); }
+		const CameraProjection::ProjectionType& GetProjectionType() const { return m_Projection->Camera.GetProjectionType(); }
 
 		void SetViewOrthographic(float width, float height, float zFar = MAX_FLOAT, float zNear = MAX_FLOAT);
 		void SetViewPerspective(float aspectRatio, float fov, float zNear = 0.01f, float zFar = DefaultFarFloat);
