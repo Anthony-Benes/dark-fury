@@ -24,7 +24,6 @@ namespace Engine {
 		bool m_ViewFocused = false;
 		bool m_ViewHovered = false;
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
-		glm::vec4 m_SquareColor;
 		Ref<Texture2D> m_TextureCB;
 
 		Ref<Scene> m_ActiveScene;

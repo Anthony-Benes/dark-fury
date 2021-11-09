@@ -9,8 +9,7 @@ namespace Engine {
 
 	EditorLayer::EditorLayer()
 		: Layer("Editor"),
-		m_CameraController(1280.0f / 720.0f, true, -10.0f),
-		m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f }) {}
+		m_CameraController(1280.0f / 720.0f, true, -10.0f) {}
 
 	void EditorLayer::OnAttach()
 	{
