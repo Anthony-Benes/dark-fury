@@ -13,6 +13,12 @@
 #include "Engine/Core/Input.hpp"
 #include "Engine/Core/KeyCodes.hpp"
 #include "Engine/Core/MouseCodes.hpp"
+
+#include "Engine/Events/Event.hpp"
+#include "Engine/Events/ApplicationEvent.hpp"
+#include "Engine/Events/KeyEvent.hpp"
+#include "Engine/Events/MouseEvent.hpp"
+
 #include "Engine/Renderer/OrthographicCameraController.hpp"
 
 #include "Engine/ImGui/ImGuiLayer.hpp"

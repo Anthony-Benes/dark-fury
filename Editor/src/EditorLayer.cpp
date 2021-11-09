@@ -1,6 +1,7 @@
 #include "EditorLayer.hpp"
 
 #include "Engine/Scene/SceneSerializer.hpp"
+#include "Engine/Utils/PlatformUtils.hpp"
 
 #include <imgui/imgui.h>
 
@@ -176,19 +177,13 @@ namespace Engine {
 				// which we can't undo at the moment without finer window depth/z control.
 				//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
 
-				if (ImGui::MenuItem("Serialize"))
-				{
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Serialize("assets/scenes/Example.fury");
-				}
+				if (ImGui::MenuItem("New", "Ctrl+N")) { NewScene(); }
 
-				if (ImGui::MenuItem("Deserialize"))
-				{
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Deserialize("assets/scenes/Example.fury");
-				}
+				if (ImGui::MenuItem("Open...", "Ctrl+O")) { OpenScene(); }
 
-				if (ImGui::MenuItem("Exit")) Engine::Application::Get().Close();
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) { SaveSceneAs(); }
+
+				if (ImGui::MenuItem("Exit")) { Engine::Application::Get().Close(); }
 				ImGui::EndMenu();
 			}
 
@@ -228,6 +223,75 @@ namespace Engine {
 	void EditorLayer::OnEvent(Event& event)
 	{
 		m_CameraController.OnEvent(event);
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& event)
+	{
+		// Shortcuts
+		if (event.GetRepeatCount() > 0)
+			return false;
+
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+		switch (event.GetKeyCode()) {
+			case Key::N:
+			{
+				if (control) { NewScene(); }
+				break;
+			}
+			case Key::O:
+			{
+				if (control) { OpenScene(); }
+				break;
+			}
+			case Key::S:
+			{
+				if (control && shift) { SaveSceneAs(); }
+				break;
+			}
+		}
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_ScenePanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Dark-Fury Scene (*.fury)\0*.fury\0");
+		if (!filepath.empty()) { OpenScene(filepath); }
+	}
+
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		if (path.extension().string() != ".fury")
+		{
+			ENG_WARN("Could not load %s - not a scene file", path.filename().c_str());
+			return;
+		}
+
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer(newScene);
+		if (serializer.Deserialize(path.string()))
+		{
+			m_ActiveScene = newScene;
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_ScenePanel.SetContext(m_ActiveScene);
+		}
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filepath = FileDialogs::SaveFile("Dark-Fury Scene (*.fury)\0*.fury\0");
+		if (!filepath.empty())
+		{
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filepath);
+		}
 	}
 
 }
