@@ -16,7 +16,7 @@
 
 namespace Engine {
 
-	extern const std::filesystem::path g_AssetPath;
+	const std::filesystem::path g_AssetPath = "assets";
 
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
@@ -321,7 +321,7 @@ namespace Engine {
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-			/*
+			
 			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -333,10 +333,10 @@ namespace Engine {
 					if (texture->IsLoaded())
 						component.Texture = texture;
 					else
-						ENG_WARN("Could not load texture {0}", texturePath.filename().string());
+						ENG_WARN("Could not load texture %s", texturePath.filename().c_str());
 				}
 				ImGui::EndDragDropTarget();
-			}*/
+			}
 
 			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 		});
