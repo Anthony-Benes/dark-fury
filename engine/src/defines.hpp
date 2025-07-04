@@ -19,12 +19,13 @@ typedef char b8;
 
 // Properly define static assertions
 #if defined(__clang__) || defined(__gcc__)
-#define STATIC_ASSERT _Static_assert
+#define STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
-#define STATIC_ASSERT static_assert
+#define STATIC_ASSERT(expr, msg) static_assert(expr, msg)
 #endif
 
 // Ensure all types are of the correct size
+namespace {
 STATIC_ASSERT(sizeof(u8) == 1, "u8 should be 1 byte");
 STATIC_ASSERT(sizeof(u16) == 2, "u16 should be 2 bytes");
 STATIC_ASSERT(sizeof(u32) == 4, "u32 should be 4 bytes");
@@ -35,6 +36,7 @@ STATIC_ASSERT(sizeof(i32) == 4, "i32 should be 4 bytes");
 STATIC_ASSERT(sizeof(i64) == 8, "i64 should be 8 bytes");
 STATIC_ASSERT(sizeof(f32) == 4, "f32 should be 4 bytes");
 STATIC_ASSERT(sizeof(f64) == 8, "f64 should be 8 bytes");
+}
 
 #define TRUE 1
 #define FALSE 0

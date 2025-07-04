@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defines.h"
+#include "defines.hpp"
 
 #ifndef DF_ASSERTIONS_ENABLED
 #define DF_ASSERTIONS_ENABLED 1

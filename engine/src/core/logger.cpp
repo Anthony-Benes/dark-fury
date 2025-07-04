@@ -1,5 +1,5 @@
-#include "logger.h"
-#include "asserts.h"
+#include "logger.hpp"
+#include "asserts.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -18,7 +18,7 @@ void shutdown_logging() {
     // TODO: cleanup logging/write queued entries
 }
 
-DF_API void log_output(log_level level, const char* message, ...) {
+void log_output(log_level level, const char* message, ...) {
     const char* level_strings[6] = {
                                      "[FATAL]: ",
                                      "[ERROR]: ",
@@ -36,7 +36,7 @@ DF_API void log_output(log_level level, const char* message, ...) {
     vsnprintf(buff_message, 32000, message, arg_ptr);
     va_end(arg_ptr);
 
-    char out_message[32000];
+    char out_message[32001];
     sprintf(out_message, "%s%s\n", level_strings[level], buff_message);
 
     printf("%s", out_message);

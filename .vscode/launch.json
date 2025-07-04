@@ -1,0 +1,35 @@
+{
+    "$schema": "https://raw.githubusercontent.com/mfussenegger/dapconfig-schema/master/dapconfig-schema.json",
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch TestApp (Debug)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/testapp/testapp",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "runInTerminal": true,
+            "setupCommands": [{
+                "description": "Enable pretty-printing for lldb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": false
+            }]
+        },
+        {
+            "name": "Launch TestApp (Release)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Release/testapp/testapp",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "runInTerminal": true,
+            "setupCommands": [{
+                "description": "Enable pretty-printing for lldb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": false
+            }]
+        }
+
+    ]
+}

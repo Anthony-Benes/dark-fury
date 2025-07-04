@@ -1,5 +1,5 @@
-#include <core/logger.h>
-#include <core/asserts.h>
+#include <core/logger.hpp>
+#include <core/asserts.hpp>
 
 int main(void) {
     DF_FATAL("Test Fatal!");
