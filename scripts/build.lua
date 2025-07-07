@@ -4,6 +4,7 @@ if not vulkan_sdk then
 end
 workspace "DarkFury"
 configurations { "Debug", "Release" }
+architecture = "x86_64"
 location ".."
 language "C++"
 cppdialect "C++20"
@@ -11,6 +12,12 @@ flags { "MultiProcessorCompile" }
 filter "action:gmake"
 buildoptions { "-g", "-Wall", "-Wextra", "-std=c++20" }
 buildcommands { "mkdir -p build && cd build && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .." }
+if _ACTION == "vs2022" then
+	platforms = { "x64" }
+	filter { "system:windows" }
+		defines { "_WIN64", "_WIN32" }
+	filter {}
+end
 
 local function projectPath(path)
     return '../' .. path

@@ -1,5 +1,6 @@
 #include "logger.hpp"
 #include "asserts.hpp"
+#include "platform/platform.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -26,18 +27,23 @@ void log_output(log_level level, const char* message, ...) {
                                      "[INFO]: ",
                                      "[DEBUG]: ",
                                      "[TRACE]: "};
-    b8 is_error = level < 2;
+    b8 is_error = level < LOG_LEVEL_WARN;
 
-    char buff_message[32000];
+    const i32 MSG_LENGTH = 32000;
+    char buff_message[MSG_LENGTH];
     memset(buff_message, 0, sizeof(buff_message));
 
     __builtin_va_list arg_ptr;
     va_start(arg_ptr, message);
-    vsnprintf(buff_message, 32000, message, arg_ptr);
+    vsnprintf(buff_message, MSG_LENGTH, message, arg_ptr);
     va_end(arg_ptr);
 
-    char out_message[32001];
+    char out_message[MSG_LENGTH+1];
     sprintf(out_message, "%s%s\n", level_strings[level], buff_message);
 
-    printf("%s", out_message);
+    if (is_error) {
+        platform_console_write_error(out_message, level);
+    } else {
+        platform_console_write(out_message, level);
+    }
 }
