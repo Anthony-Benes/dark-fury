@@ -96,11 +96,7 @@ b8 platform_pump_message(platform_state* plat_state) {
     xcb_generic_event_t* event;
     xcb_client_message_event_t* cm;
     b8 quit_flagged = FALSE;
-    while (event != 0) {
-        event = xcb_poll_for_event(state->connection);
-        if (event == 0) {
-            break;
-        }
+    while (xcb_generic_event_t* event = xcb_poll_for_event(state->connection)) {
         switch (event->response_type & ~0x80) {
             case XCB_KEY_PRESS:
             case XCB_KEY_RELEASE: {
@@ -114,7 +110,7 @@ b8 platform_pump_message(platform_state* plat_state) {
             } break;
             case XCB_CLIENT_MESSAGE: {
                 cm = (xcb_client_message_event_t*)event;
-                if (cm->data.data32[8] == state->wm_delete_win) {
+                if (cm->data.data32[0] == state->wm_delete_win) {
                     quit_flagged = TRUE;
                 }
             } break;
