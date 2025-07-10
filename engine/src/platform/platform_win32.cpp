@@ -99,11 +99,11 @@ b8 platform_pump_message(platform_state* plat_state) {
     return TRUE;
 }
 
-void* platform_allocate(u64 size, b8 aligned) { return malloc(size); }
+void* platform_allocate(u64 size, b8 aligned) { return malloc(static_cast<size_t>(size)); }
 void platform_free(void* block, b8 aligned) { free(block); }
-void* platform_zero_memory(void* block, u64 size) { return memset(block, 0, size); }
-void* platform_copy_memory(void* dest, const void* source, u64 size) { return memcpy(dest, source, size); }
-void* platform_set_memory(void* dest, i32 value, u64 size) { return memset(dest, value, size); }
+void* platform_zero_memory(void* block, u64 size) { return memset(block, 0, static_cast<size_t>(size)); }
+void* platform_copy_memory(void* dest, const void* source, u64 size) { return memcpy(dest, source, static_cast<size_t>(size)); }
+void* platform_set_memory(void* dest, i32 value, u64 size) { return memset(dest, value, static_cast<size_t>(size)); }
 
 void platform_console_write(const char* message, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -130,7 +130,7 @@ f64 platform_get_absolute_time() {
     return (f64)now_time.QuadPart * clock_frequency;
 }
 
-void platform_sleep(u64 ms) { Sleep(ms); }
+void platform_sleep(u64 ms) { Sleep(static_cast<size_t>(ms)); }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {

@@ -1,6 +1,4 @@
 #include "platform.hpp"
-#include <ctime>
-#include <xcb/xproto.h>
 
 #if DF_PLATFORM_LINUX
 #include "core/logger.hpp"

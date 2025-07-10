@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defines.hpp"
+#include <defines.hpp>
 
 typedef struct platform_state {
     void* internal_state;

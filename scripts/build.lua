@@ -11,12 +11,12 @@ cppdialect "C++20"
 flags { "MultiProcessorCompile" }
 filter "action:gmake"
 buildoptions { "-g", "-Wall", "-Wextra", "-std=c++20" }
-buildcommands { "mkdir -p build && cd build && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .." }
+buildcommands { "mkdir -p out && cd out && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .." }
 if _ACTION == "vs2022" then
-	platforms = { "x64" }
-	filter { "system:windows" }
-		defines { "_WIN64", "_WIN32" }
-	filter {}
+    platforms = { "x64" }
+    filter { "system:windows" }
+    defines { "_WIN64", "_WIN32" }
+    filter {}
 end
 
 local function projectPath(path)
@@ -30,22 +30,22 @@ function NewProject(options)
     local extraDefines = options.defines or {}
     local extraLinks = options.links or {}
     project(o_name)
-    location(projectPath('build'))
+    location(projectPath('out') .. "/" .. o_name)
     kind(o_kind)
     targetname(o_kind == "SharedLib" and ("lib" .. outputName) or outputName)
-    targetdir(projectPath("bin") .. "/%{cfg.buildcfg}/" .. o_name)
-    objdir(projectPath("build/obj") .. "/%{cfg.buildcfg}/" .. o_name)
+    targetdir(projectPath("out") .. "/" .. o_name .. "/%{cfg.buildcfg}")
+    objdir(projectPath("out/obj") .. "/" .. o_name .. "/%{cfg.buildcfg}")
     files {
-        projectPath(sourcesPath) .. "/**.c",
-        projectPath(sourcesPath) .. "/**.cpp",
         projectPath(sourcesPath) .. "/**.h",
-        projectPath(sourcesPath) .. "/**.hpp"
+        projectPath(sourcesPath) .. "/**.hpp",
+        projectPath(sourcesPath) .. "/**.c",
+        projectPath(sourcesPath) .. "/**.cpp"
     }
     includedirs {
         projectPath(sourcesPath) .. "/src"
     }
     libdirs {
-        projectPath("bin") .. "/%{cfg.buildcfg}/engine"
+        projectPath("out") .. "/engine/%{cfg.buildcfg}"
     }
     links(extraLinks)
     filter "system:linux"

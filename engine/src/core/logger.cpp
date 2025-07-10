@@ -1,10 +1,10 @@
-#include "logger.hpp"
-#include "asserts.hpp"
-#include "platform/platform.hpp"
+#include <core/logger.hpp>
+#include <core/asserts.hpp>
+#include <platform/platform.hpp>
 
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
+#include <cstdarg>
 
 void report_assertion_failure(const char* expression, const char* message, const char* file, i32 line) {
     log_output(LOG_LEVEL_FATAL, "Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression, message, file, line);
@@ -33,7 +33,7 @@ void log_output(log_level level, const char* message, ...) {
     char buff_message[MSG_LENGTH];
     memset(buff_message, 0, sizeof(buff_message));
 
-    __builtin_va_list arg_ptr;
+    va_list arg_ptr;
     va_start(arg_ptr, message);
     vsnprintf(buff_message, MSG_LENGTH, message, arg_ptr);
     va_end(arg_ptr);

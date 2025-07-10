@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defines.hpp"
+#include <defines.hpp>
 
 #define LOG_WARN_ENABLED 1
 #define LOG_INFO_ENABLED 1
@@ -24,7 +24,7 @@ typedef enum log_level {
     LOG_LEVEL_TRACE = 5
 } log_level;
 
-b8 initalize_logging();
+b8 initialize_logging();
 void shutdown_logging();
 
 DF_API void log_output(log_level level, const char* message, ...);
