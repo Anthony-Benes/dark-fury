@@ -30,7 +30,7 @@ typedef struct internal_state {
 } internal_state;
 
 b8 platform_startup(platform_state* plat_state, const char* application_name, i32 x, i32 y, i32 width, i32 height) {
-    plat_state->internal_state = malloc(sizeof(internal_state));
+    plat_state->internal_state = platform_allocate(sizeof(internal_state));
     internal_state* state = (internal_state*)plat_state->internal_state;
     state->display = XOpenDisplay(NULL);
     XAutoRepeatOff(state->display);
@@ -117,7 +117,7 @@ b8 platform_pump_message(platform_state* plat_state) {
             default:
                 break;
         }
-        free(event);
+        platform_free(event);
     }
     return !quit_flagged;
 }

@@ -2,11 +2,13 @@
 
 #include <core/application.hpp>
 #include <core/logger.hpp>
+#include <core/df_memory.hpp>
 #include <game_types.hpp>
 
 extern b8 create_game(game* out_game);
 
 int main(void) {
+    initialize_memory();
     game game_inst;
     if (!create_game(&game_inst)) {
         DF_FATAL("Could not create game!");
@@ -24,5 +26,6 @@ int main(void) {
         DF_INFO("Application did not shutdown gracefully.");
         return 2;
     }
+    shutdown_memory();
     return 0;
 }

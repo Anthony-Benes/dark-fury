@@ -18,12 +18,12 @@ static LARGE_INTEGER start_time;
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
 b8 platform_startup(platform_state* plat_state, const char* application_name, i32 x, i32 y, i32 width, i32 height) {
-    plat_state->internal_state = malloc(sizeof(internal_state));
+    plat_state->internal_state = platform_allocate(sizeof(internal_state));
     internal_state* state = (internal_state*)plat_state->internal_state;
     state->h_instance = GetModuleHandleA(0);
     HICON icon = LoadIcon(state->h_instance, IDI_APPLICATION);
     WNDCLASSA wc;
-    memset(&wc, 0, sizeof(wc));
+    platform_set_memory(&wc, 0, sizeof(wc));
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = win32_process_message;
     wc.cbClsExtra = 0;

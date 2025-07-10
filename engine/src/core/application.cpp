@@ -2,6 +2,7 @@
 
 #include <game_types.hpp>
 #include <core/logger.hpp>
+#include <core/df_memory.hpp>
 #include <platform/platform.hpp>
 
 typedef struct application_state {
@@ -54,6 +55,7 @@ b8 application_create(game* game_inst) {
 }
 
 b8 application_run() {
+    DF_INFO(get_memory_usage_str());
     while (app_state.is_running) {
         if (!platform_pump_message(&app_state.platform)) {
             app_state.is_running = FALSE;
