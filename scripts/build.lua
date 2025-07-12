@@ -4,6 +4,7 @@ if not vulkan_sdk then
 end
 workspace "DarkFury"
 configurations { "Debug", "Release" }
+platforms { "x64" }
 architecture = "x86_64"
 location ".."
 language "C++"
@@ -12,12 +13,7 @@ flags { "MultiProcessorCompile" }
 filter "action:gmake"
 buildoptions { "-g", "-Wall", "-Wextra", "-std=c++20" }
 buildcommands { "mkdir -p out && cd out && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .." }
-if _ACTION == "vs2022" then
-    platforms = { "x64" }
-    filter { "system:windows" }
-    defines { "_WIN64", "_WIN32" }
-    filter {}
-end
+filter {}
 
 local function projectPath(path)
     return '../' .. path
@@ -29,6 +25,7 @@ function NewProject(options)
     local outputName = options.outputName or o_name
     local extraDefines = options.defines or {}
     local extraLinks = options.links or {}
+    local extraIncludeDirs = options.includedirs or {}
     project(o_name)
     location(projectPath('out') .. "/" .. o_name)
     kind(o_kind)
@@ -42,7 +39,8 @@ function NewProject(options)
         projectPath(sourcesPath) .. "/**.cpp"
     }
     includedirs {
-        projectPath(sourcesPath) .. "/src"
+        projectPath(sourcesPath) .. "/src",
+		table.unpack(extraIncludeDirs)
     }
     libdirs {
         projectPath("out") .. "/engine/%{cfg.buildcfg}"
@@ -59,6 +57,21 @@ function NewProject(options)
     defines {
         "_CRT_SECURE_NO_WARNINGS"
     }
+    if options.buildoutputs then
+        buildoutputs(projectPath('out') .. options.buildoutputs)
+    end
+    if o_name == "engine" then
+        includedirs {
+            vulkan_sdk .. "/Include"
+        }
+        libdirs {
+            vulkan_sdk .. "/Lib"
+        }
+    else	
+        postbuildcommands {
+			'xcopy /Q /Y /I "..\\engine\\%{cfg.buildcfg}\\libengine.dll" "$(TargetDir)"'
+        }
+    end
     filter "configurations:Debug"
     symbols "On"
     defines {
@@ -74,19 +87,26 @@ function NewProject(options)
     filter {}
 end
 
+local engineLinks = {}
+if os.target() == "windows" then
+    engineLinks = { "vulkan-1" }
+elseif os.target() == "linux" then
+    engineLinks = {
+        "vulkan",
+        "xcb",
+        "X11",
+        "X11-xcb",
+        "xkbcommon"
+    }
+end
+startproject "testapp"
 NewProject {
     name = "engine",
     kind = "SharedLib",
     sourcesPath = "engine",
     defines = { "DF_EXPORT" },
-    links = {
-        "vulkan",
-        "xcb",
-        "X11",
-        "X11-xcb",
-        "xkbcommon",
-        --"vulkan-1" -- for Windows; harmless on Linux if missing
-    }
+    links = engineLinks,
+	buildoutputs = "/engine/%{cfg.buildcfg}/libengine.dll"
 }
 
 NewProject {
@@ -94,13 +114,8 @@ NewProject {
     kind = "ConsoleApp",
     sourcesPath = "testapp",
     defines = { "DF_IMPORT" },
-    links = { "engine" }
-}
-
--- Additional include path for testapp to find engine headers
-project "testapp"
-includedirs {
-    "../engine/src"
+    links = { "engine" },
+    includedirs = { "../engine/src" }
 }
 
 include "generate_json.lua"

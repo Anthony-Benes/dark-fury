@@ -130,7 +130,7 @@ f64 platform_get_absolute_time() {
     return (f64)now_time.QuadPart * clock_frequency;
 }
 
-void platform_sleep(u64 ms) { Sleep(static_cast<size_t>(ms)); }
+void platform_sleep(u64 ms) { Sleep(static_cast<DWORD>(ms)); }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
