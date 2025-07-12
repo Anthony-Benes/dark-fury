@@ -23,9 +23,9 @@ typedef enum memory_tag {
     MEMORY_TAG_MAX_TAGS
 } memory_tag;
 
-void initialize_memory();
+DF_API void initialize_memory();
 
-void shutdown_memory();
+DF_API void shutdown_memory();
 
 DF_API void* df_allocate(u64 size, memory_tag tag);
 

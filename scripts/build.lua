@@ -4,6 +4,7 @@ if not vulkan_sdk then
 end
 workspace "DarkFury"
 configurations { "Debug", "Release" }
+platforms { "x64" }
 architecture = "x86_64"
 location ".."
 language "C++"
@@ -12,12 +13,7 @@ flags { "MultiProcessorCompile" }
 filter "action:gmake"
 buildoptions { "-g", "-Wall", "-Wextra", "-std=c++20" }
 buildcommands { "mkdir -p out && cd out && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .." }
-if _ACTION == "vs2022" then
-    platforms = { "x64" }
-    filter { "system:windows" }
-    defines { "_WIN64", "_WIN32" }
-    filter {}
-end
+filter {}
 
 local function projectPath(path)
     return '../' .. path
@@ -59,6 +55,14 @@ function NewProject(options)
     defines {
         "_CRT_SECURE_NO_WARNINGS"
     }
+    if o_name == "engine" then
+        includedirs {
+            vulkan_sdk .. "/Include"
+        }
+        libdirs {
+            vulkan_sdk .. "/Lib"
+        }
+    end
     filter "configurations:Debug"
     symbols "On"
     defines {
@@ -74,19 +78,25 @@ function NewProject(options)
     filter {}
 end
 
+local engineLinks = {}
+if os.target() == "windows" then
+    engineLinks = { "vulkan-1" }
+elseif os.target() == "linux" then
+    engineLinks = {
+        "vulkan",
+        "xcb",
+        "X11",
+        "X11-xcb",
+        "xkbcommon"
+    }
+end
+startproject "testapp"
 NewProject {
     name = "engine",
     kind = "SharedLib",
     sourcesPath = "engine",
     defines = { "DF_EXPORT" },
-    links = {
-        "vulkan",
-        "xcb",
-        "X11",
-        "X11-xcb",
-        "xkbcommon",
-        --"vulkan-1" -- for Windows; harmless on Linux if missing
-    }
+    links = engineLinks
 }
 
 NewProject {
