@@ -1,7 +1,9 @@
+#include "core/input.hpp"
 #include "platform.hpp"
 
 #if DF_PLATFORM_WINDOWS
-#include "core/logger.hpp"
+#include <core/logger.hpp>
+#include <core/input.hpp>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -153,19 +155,20 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         case WM_SYSKEYDOWN:
         case WM_KEYUP:
         case WM_SYSKEYUP: {
-            //b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-            // TODO: input processing
+            b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+            Input::Keys key = static_cast<Input::Keys>(w_param);
+            Input::ProcessKey(key, pressed);
         } break;
         case WM_MOUSEMOVE: {
-            //i32 x_position = GET_X_LPARAM(l_param);
-            //i32 y_position = GET_Y_LPARAM(l_param);
-            // TODO: input processing
+            i32 x_position = GET_X_LPARAM(l_param);
+            i32 y_position = GET_Y_LPARAM(l_param);
+            Input::ProcessMouseMove(x_position, y_position);
         } break;
         case WM_MOUSEWHEEL: {
             i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
             if (z_delta != 0) {
                 z_delta = (z_delta < 0) ? -1 : 1;
-                // TODO: input processing
+                Input::ProcessMouseWheel(z_delta);
             }
         } break;
         case WM_LBUTTONDOWN:
@@ -174,8 +177,23 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         case WM_LBUTTONUP:
         case WM_MBUTTONUP:
         case WM_RBUTTONUP: {
-            //b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
-            // TODO: input processing
+            b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
+            Input::Buttons button;
+            switch (msg) {
+                case WM_LBUTTONDOWN:
+                case WM_LBUTTONUP:
+                    button = Input::Buttons::M_Left;
+                    break;
+                case WM_MBUTTONDOWN:
+                case WM_MBUTTONUP:
+                    button = Input::Buttons::M_Middle;
+                    break;
+                case WM_RBUTTONDOWN:
+                case WM_RBUTTONUP:
+                    button = Input::Buttons::M_Right;
+                    break;
+            }
+            Input::ProcessButton(button, pressed);
         } break;
     }
     return DefWindowProcA(hwnd, msg, w_param, l_param);

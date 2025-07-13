@@ -1,8 +1,8 @@
 #include <core/df_memory.hpp>
 #include <core/logger.hpp>
+#include <core/df_string.hpp>
 #include <platform/platform.hpp>
 
-#include <string.h>
 #include <stdio.h>
 
 struct memory_stats {
@@ -97,8 +97,6 @@ char* get_memory_usage_str() {
         i32 length = snprintf(buffer + offset, 7999, "  %s: %.2f%s\n", memory_tag_strings[i], amount, unit);
         offset += length;
     }
-    auto result_len = strlen(buffer) + 1;
-    char* out_str = (char*)platform_allocate(result_len);
-    if (out_str) { memcpy(out_str, buffer, result_len); }
+    char* out_str = string_dup(buffer);
     return out_str;
 }

@@ -88,7 +88,6 @@ b8 event_fire(u16 code, void *sender, event_context context) {
         return FALSE;
     }
     if (state.registered[code].events == 0) {
-        DF_WARN("Event does not exist. Cannot fire.");
         return FALSE;
     }
     u64 registered_count = darray_length(state.registered[code].events);
