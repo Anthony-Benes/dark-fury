@@ -5,13 +5,14 @@
 
 #include <stdio.h>
 
+namespace Memory {
 struct memory_stats {
     u64 total_allocated;
-    u64 tagged_allocations[MEMORY_TAG_MAX_TAGS];
+    u64 tagged_allocations[MaxTags];
 };
 static struct memory_stats stats;
 
-static const char* memory_tag_strings[MEMORY_TAG_MAX_TAGS] = {
+static const char* memory_tag_strings[MaxTags] = {
     "UNKNOWN    ",
     "ARRAY      ",
     "DARRAY     ",
@@ -31,30 +32,30 @@ static const char* memory_tag_strings[MEMORY_TAG_MAX_TAGS] = {
     "SCENE      "
 };
 
-void initialize_memory() {
+void Initialize() {
     platform_zero_memory(&stats, sizeof(stats));
 }
 
-void shutdown_memory() {}
+void Shutdown() {}
 
-void* df_allocate(u64 size, memory_tag tag) {
-    if (tag == MEMORY_TAG_UNKNOWN) {
-        DF_WARN("df_allocate called using MEMORY_TAG_UNKNOWN. Re-class this allocation.");
+void* df_allocate(u64 size, Tag tag) {
+    if (tag == Tag::UNKNOWN) {
+        Logger::Warn("df_allocate called using Memory::Tag::UNKNOWN. Re-class this allocation.");
     }
     stats.total_allocated += size;
-    stats.tagged_allocations[tag] += size;
-    void* block = platform_allocate(size, FALSE);
+    stats.tagged_allocations[static_cast<u16>(tag)] += size;
+    void* block = platform_allocate(size, false);
     platform_zero_memory(block, size);
     return block;
 }
 
-void df_free(void* block, u64 size, memory_tag tag) {
-    if (tag == MEMORY_TAG_UNKNOWN) {
-        DF_WARN("df_free called using MEMORY_TAG_UNKNOWN. Re-class this allocation.");
+void df_free(void* block, u64 size, Tag tag) {
+    if (tag == Tag::UNKNOWN) {
+        Logger::Warn("df_free called using Memory::Tag::UNKNOWN. Re-class this allocation.");
     }
     stats.total_allocated -= size;
-    stats.tagged_allocations[tag] -= size;
-    platform_free(block, FALSE);
+    stats.tagged_allocations[static_cast<u16>(tag)] -= size;
+    platform_free(block, false);
 }
 
 void* df_zero_memory(void* block, u64 size) {
@@ -77,7 +78,7 @@ char* get_memory_usage_str() {
     const u64 gib = 1024 * mib;
     char buffer[8000] = "System memory use (tagged):\n";
     u64 offset = strlen(buffer);
-    for (u32 i = 0; i < MEMORY_TAG_MAX_TAGS; i++) {
+    for (u32 i = 0; i < MaxTags; i++) {
         char unit[4] = "XiB";
         float amount = 1.0f;
         if (stats.tagged_allocations[i] >= gib) {
@@ -100,3 +101,5 @@ char* get_memory_usage_str() {
     char* out_str = string_dup(buffer);
     return out_str;
 }
+
+} // namespace Memory

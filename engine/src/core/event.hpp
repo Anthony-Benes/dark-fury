@@ -2,7 +2,8 @@
 
 #include <defines.hpp>
 
-struct event_context {
+namespace Event {
+struct Context {
     union {
         i64 d_i64[2];
         u64 d_u64[2];
@@ -18,25 +19,28 @@ struct event_context {
     } data;
 };
 
-typedef b8 (*F_on_event)(u16 code, void* sender, void* listener_inst, event_context data);
+namespace Code {
+    enum class System : u16 {
+        ApplicationQuit = 0x01,
+        KeyPressed = 0x02,
+        KeyReleased = 0x03,
+        ButtonPressed = 0x04,
+        ButtonReleased = 0x05,
+        MouseMoved = 0x06,
+        MouseWheel = 0x07,
+        Resized = 0x08,
+        Invalid = 0xff,
+    };
+} // namespace Code
 
-b8 event_initialize();
-void event_shutdown();
+typedef b8(*F_on_event)(Code::System code, void* sender, void* listener_inst, Context data);
 
-DF_API b8 event_register(u16 code, void* listener, F_on_event on_event);
+    b8 Initialize();
+    void Shutdown();
 
-DF_API b8 event_unregister(u16 code, void* listener, F_on_event on_event);
+    DF_API b8 Register(Code::System code, void* listener, F_on_event on_event);
 
-DF_API b8 event_fire(u16 code, void* sender, event_context context);
+    DF_API b8 Unregister(Code::System code, void* listener, F_on_event on_event);
 
-enum SYSTEM_event_code {
-    EVENT_CODE_APPLICATION_QUIT = 0x01,
-    EVENT_CODE_KEY_PRESSED = 0x02,
-    EVENT_CODE_KEY_RELEASED = 0x03,
-    EVENT_CODE_BUTTON_PRESSED = 0x04,
-    EVENT_CODE_BUTTON_RELEASED = 0x05,
-    EVENT_CODE_MOUSE_MOVED = 0x06,
-    EVENT_CODE_MOUSE_WHEEL = 0x07,
-    EVENT_CODE_RESIZED = 0x08,
-    MAX_EVENT_CODE = 0xff
-};
+    DF_API b8 Fire(Code::System code, void* sender, Context context);
+} // namespace Event

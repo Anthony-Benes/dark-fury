@@ -42,8 +42,8 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
     XAutoRepeatOff(state->display);
     state->connection = XGetXCBConnection(state->display);
     if (xcb_connection_has_error(state->connection)) {
-        DF_FATAL("Failed to connect to X server via XCB.");
-        return FALSE;
+        Logger::Fatal("Failed to connect to X server via XCB.");
+        return false;
     }
     const struct xcb_setup_t* setup = xcb_get_setup(state->connection);
     xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
@@ -59,12 +59,12 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
                        XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_POINTER_MOTION |
                        XCB_EVENT_MASK_STRUCTURE_NOTIFY;
     u32 value_list[] = { state->screen->black_pixel, event_values };
-    xcb_void_cookie_t cookie = xcb_create_window(state->connection, XCB_COPY_FROM_PARENT,
-                                                 state->window, state->screen->root,
-                                                 x, y, width, height, 0,
-                                                 XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                                                 state->screen->root_visual, event_mask,
-                                                 value_list);
+    xcb_create_window(state->connection, XCB_COPY_FROM_PARENT,
+                      state->window, state->screen->root,
+                      x, y, width, height, 0,
+                      XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                      state->screen->root_visual, event_mask,
+                      value_list);
     xcb_change_property(state->connection, XCB_PROP_MODE_REPLACE, state->window,
                         XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
                         strlen(application_name), application_name);
@@ -85,10 +85,10 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
     xcb_map_window(state->connection, state->window);
     i32 stream_result = xcb_flush(state->connection);
     if (stream_result <= 0) {
-        DF_FATAL("An error occurred when flushing the stream: %d", stream_result);
-        return FALSE;
+        Logger::Fatal("An error occurred when flushing the stream: %d", stream_result);
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
 void platform_shutdown(platform_state* plat_state) {
@@ -99,9 +99,8 @@ void platform_shutdown(platform_state* plat_state) {
 
 b8 platform_pump_message(platform_state* plat_state) {
     internal_state* state = (internal_state*)plat_state->internal_state;
-    xcb_generic_event_t* event;
     xcb_client_message_event_t* cm;
-    b8 quit_flagged = FALSE;
+    b8 quit_flagged = false;
     while (xcb_generic_event_t* event = xcb_poll_for_event(state->connection)) {
         switch (event->response_type & ~0x80) {
             case XCB_KEY_PRESS:
@@ -140,7 +139,7 @@ b8 platform_pump_message(platform_state* plat_state) {
             case XCB_CLIENT_MESSAGE: {
                 cm = (xcb_client_message_event_t*)event;
                 if (cm->data.data32[0] == state->wm_delete_win) {
-                    quit_flagged = TRUE;
+                    quit_flagged = true;
                 }
             } break;
             default:
@@ -151,8 +150,8 @@ b8 platform_pump_message(platform_state* plat_state) {
     return !quit_flagged;
 }
 
-void* platform_allocate(u64 size, b8 aligned) { return malloc(size); }
-void platform_free(void* block, b8 aligned) { free(block); }
+void* platform_allocate(u64 size, [[maybe_unused]]b8 aligned) { return malloc(size); }
+void platform_free(void* block, [[maybe_unused]]b8 aligned) { free(block); }
 void* platform_zero_memory(void* block, u64 size) { return memset(block, 0, size); }
 void* platform_copy_memory(void* dest, const void* source, u64 size) { return memcpy(dest, source, size); }
 void* platform_set_memory(void* dest, i32 value, u64 size) { return memset(dest, value, size); }

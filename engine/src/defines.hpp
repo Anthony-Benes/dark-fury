@@ -15,7 +15,7 @@ typedef float f32;
 typedef double f64;
 // Boolean types
 typedef int b32;
-typedef char b8;
+typedef bool b8;
 
 // Properly define static assertions
 #if defined(__clang__) || defined(__gcc__)
@@ -36,8 +36,10 @@ STATIC_ASSERT(sizeof(i64) == 8, "i64 should be 8 bytes");
 STATIC_ASSERT(sizeof(f32) == 4, "f32 should be 4 bytes");
 STATIC_ASSERT(sizeof(f64) == 8, "f64 should be 8 bytes");
 
-#define TRUE 1
-#define FALSE 0
+struct Point {
+	u32 x;
+	u32 y;
+};
 
 // Platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)

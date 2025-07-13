@@ -10,8 +10,8 @@ DF_API u64 str_len(const char* str);
 
 inline char* string_dup(const char* str) {
     auto length = str_len(str);
-    char* copy = (char*)df_allocate(length + 1, MEMORY_TAG_STRING);
-    df_copy_memory(copy, str, length + 1);
+    char* copy = (char*)Memory::df_allocate(length + 1, Memory::Tag::STRING);
+    Memory::df_copy_memory(copy, str, length + 1);
     return copy;
 }
 

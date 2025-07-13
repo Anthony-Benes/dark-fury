@@ -38,7 +38,7 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
 
     if (!RegisterClassA(&wc)) {
         MessageBoxA(0, "Window registration failed", "Error", MB_ICONEXCLAMATION | MB_OK);
-        return FALSE;
+        return false;
     }
 
     u32 client_x = x;
@@ -67,8 +67,8 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
                                   state->h_instance, 0);
     if (handle == 0) {
         MessageBoxA(NULL, "Window creation failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
-        DF_FATAL("Window creation failed!");
-        return FALSE;
+        Logger::Fatal("Window creation failed!");
+        return false;
     }
     state->hwnd = handle;
 
@@ -81,7 +81,7 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
     clock_frequency = 1.0 / (f64)frequency.QuadPart;
     QueryPerformanceCounter(&start_time);
 
-    return TRUE;
+    return true;
 }
 
 void platform_shutdown(platform_state* plat_state) {
@@ -98,7 +98,7 @@ b8 platform_pump_message(platform_state* plat_state) {
         TranslateMessage(&message);
         DispatchMessageA(&message);
     }
-    return TRUE;
+    return true;
 }
 
 void* platform_allocate(u64 size, b8 aligned) { return malloc(static_cast<size_t>(size)); }
