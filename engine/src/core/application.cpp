@@ -1,8 +1,9 @@
 #include <core/application.hpp>
 
 #include <game_types.hpp>
-#include <core/logger.hpp>
 #include <core/df_memory.hpp>
+#include <core/event.hpp>
+#include <core/logger.hpp>
 #include <platform/platform.hpp>
 
 typedef struct application_state {
@@ -39,6 +40,11 @@ b8 application_create(game* game_inst) {
     app_state.is_running = TRUE;
     app_state.is_suspended = FALSE;
 
+    if (!event_initialize()) {
+        DF_ERROR("Event system failed initialization. Application cannot continue.");
+        return FALSE;
+    }
+
     auto config = app_state.game_inst->app_config;
     if (!platform_startup(&app_state.platform, config.name, config.start_pos_x,
                           config.start_pos_y, config.start_pos_width,
@@ -74,6 +80,7 @@ b8 application_run() {
         }
     }
     app_state.is_running = FALSE;
+    event_shutdown();
     platform_shutdown(&app_state.platform);
     return TRUE;
 }
