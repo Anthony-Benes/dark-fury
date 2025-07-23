@@ -1,40 +1,87 @@
 #pragma once
 
 #include <defines.hpp>
+#include <core/df_memory.hpp>
+#include <core/logger.hpp>
 
-enum {
-    DARRAY_CAPACITY,
-    DARRAY_LENGTH,
-    DARRAY_STRIDE,
-    DARRAY_FIELD_LENGTH
+namespace Engine {
+
+template<class T>
+class DF_API DArray {
+  public:
+    static const u64 DefaultCapacity = 1;
+    static const u64 ResizeFactor = 2;
+    DArray(u64 capacity = DefaultCapacity) : mSize(0), mCapacity(capacity) {
+        mData = (T*)Memory::df_allocate(mCapacity * sizeof(T), Memory::Tag::DARRAY);
+    }
+    ~DArray() {
+        clear();
+    }
+    void push(T value) {
+        if (mSize >= mCapacity) { resize(); }
+        mData[mSize++] = value;
+    }
+    T pop() {
+        return mData[--mSize];
+    }
+    void insert_at(u64 index, T value) {
+        if (index > mSize) {
+            Log::Error("Index outside the bounds of this array! Size: %i, index: %i", mSize, index);
+            return;
+        }
+        if (mSize >= mCapacity) { resize(); }
+        u64 addr = (u64)mData;
+        if (index != mSize - 1) {
+            Memory::df_copy_memory((void*)(addr + ((index + 1) * sizeof(T))), (void*)(addr + (index * sizeof(T))), sizeof(T) * (mSize - index));
+        }
+        Memory::df_copy_memory((void*)(addr + (index * sizeof(T))), &value, sizeof(T));
+        ++mSize;
+    }
+    T pop_at(u64 index) {
+        if (index >= mSize) {
+            Log::Error("Index outside the bounds of this array! Size: %i, index: %i", mSize, index);
+            index = mSize - 1;
+        }
+        T dest = mData[index];
+        if (index != mSize - 1) {
+            u64 addr = (u64)mData;
+            Memory::df_copy_memory((void*)(addr + (index * sizeof(T))), (void*)(addr + ((index + 1) * sizeof(T))), sizeof(T) * (mSize - index));
+        }
+        --mSize;
+        return dest;
+    }
+    void clear() {
+        if (mData) {
+            Memory::df_free(mData, mSize * sizeof(T), Memory::Tag::DARRAY);
+            mData = nullptr;
+        }
+        mSize = 0;
+        mCapacity = 0;
+    }
+
+    b8 isEmpty() { return mSize == 0; }
+    u64 size() {
+        return mSize;
+    }
+    u64 capacity() {
+        return mCapacity;
+    }
+    T* data() { return mData; }
+  private:
+    u64 mSize;
+    u64 mCapacity;
+    T* mData;
+    void resize() {
+        u64 newCapacity = mCapacity * ResizeFactor;
+        T* newData = (T*)Memory::df_allocate(newCapacity * sizeof(T), Memory::Tag::DARRAY);
+        Memory::df_copy_memory(newData, mData, mSize * sizeof(T));
+        Memory::df_free(mData, mCapacity * sizeof(T), Memory::Tag::DARRAY);
+        mData = newData;
+        mCapacity = newCapacity;
+    }
+  public:
+    T& operator[](u64 index) { return mData[index]; }
+    const T& operator[](u64 index) const { return mData[index]; }
 };
 
-DF_API void* _darray_create(u64 length, u64 stride);
-DF_API void _darray_destroy(void* array);
-
-DF_API u64 _darray_field_get(void* array, u64 field);
-DF_API void _darray_field_set(void* array, u64 field, u64 value);
-
-DF_API void* _darray_resize(void* array);
-
-DF_API void* _darray_push(void* array, const void* value_ptr);
-DF_API void _darray_pop(void* array, void* dest);
-
-DF_API void* _darray_insert_at(void* array, u64 index, void* value_ptr);
-DF_API void* _darray_pop_at(void* array, u64 index, void* dest);
-
-#define DARRAY_DEFAULT_CAPACITY 1
-#define DARRAY_RESIZE_FACTOR 2
-
-#define darray_create(type) _darray_create(DARRAY_DEFAULT_CAPACITY, sizeof(type))
-#define darray_reserve(type, capacity) _darray_create(capacity, sizeof(type))
-#define darray_destroy(array) _darray_destroy(array)
-#define darray_push(array, value_ptr) _darray_push(array, value_ptr)
-#define darray_pop(array, value_ptr) _darray_pop(array, value_ptr)
-#define darray_insert_at(array, index, value_ptr) _darray_insert_at(array, index, value_ptr)
-#define darray_pop_at(array, index, value_ptr) _darray_pop_at(array, index, value_ptr)
-#define darray_clear(array) _darray_field_set(array, DARRAY_LENGTH, 0)
-#define darray_capacity(array) _darray_field_get(array, DARRAY_CAPACITY)
-#define darray_length(array) _darray_field_get(array, DARRAY_LENGTH)
-#define darray_stride(array) _darray_field_get(array, DARRAY_STRIDE)
-#define darray_length_set(array, value) _darray_field_set(array, DARRAY_LENGTH, value)
+} // namespace Engine

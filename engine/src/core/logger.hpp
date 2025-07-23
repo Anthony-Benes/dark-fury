@@ -17,7 +17,9 @@
 #define LOG_TRACE_ENABLED 1
 #endif
 
-class DF_API Logger {
+namespace Engine {
+
+class DF_API Log {
 public:
     static b8 Initialize();
     static void Shutdown();
@@ -37,8 +39,10 @@ private:
     Debug = 4,
     Trace = 5
 };
-    static Logger& Get();
+    static Log& Get();
     void log_out(Level level, const char* message, va_list args);
-    Logger() = default;
-    ~Logger() = default;
+    Log() = default;
+    ~Log() = default;
 };
+
+} // namespace Engine

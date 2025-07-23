@@ -5,7 +5,7 @@
 #include <core/df_memory.hpp>
 #include <core/logger.hpp>
 
-namespace Input {
+namespace Engine::Input {
 struct keyboard_state {
     b8 keys[256];
 };
@@ -29,14 +29,14 @@ static input_state state = {};
 void Initialize() {
     Memory::df_zero_memory(&state, sizeof(input_state));
     initialized = true;
-    Logger::Info("Input subsystem initialized");
+    Log::Info("Input subsystem initialized");
 }
 
 void Shutdown() {
     initialized = false;
 }
 
-void Update(f64 delta_time) {
+void Update([[maybe_unused]]f64 delta_time) {
     if (!initialized) { return; }
     Memory::df_copy_memory(&state.keyboard_previous, &state.keyboard_current, sizeof(keyboard_state));
     Memory::df_copy_memory(&state.mouse_previous, &state.mouse_current, sizeof(mouse_state));
@@ -63,7 +63,7 @@ void ProcessButton(Buttons button, b8 pressed) {
 void ProcessMouseMove(i16 x, i16 y) {
     if (state.mouse_current.x != x || state.mouse_current.y != y) {
         if constexpr (DF_DEBUG_INPUT) {
-            Logger::Debug("Mouse pos: %i, %i!", x, y);
+            Log::Debug("Mouse pos: %i, %i!", x, y);
         }
         state.mouse_current.x = x;
         state.mouse_current.y = y;

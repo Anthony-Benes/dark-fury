@@ -2,9 +2,12 @@
 
 #include <defines.hpp>
 #include <core/asserts.hpp>
+#include <core/clock.hpp>
 #include <platform/platform.hpp>
 
 int main(int argc, char** argv);
+
+namespace Engine {
 
 struct AppCommandLineArgs {
     int Count = 0;
@@ -59,6 +62,8 @@ private:
   b8 OnResize(Point newSize);
   AppSpecification mSpecification;
   Window* mWindow;
+  Clock mClock;
+  f64 mLastTime = 0;
   b8 mRunning = true;
   b8 mSuspended = false;
 
@@ -66,5 +71,7 @@ private:
   friend int ::main(int argc, char** argv);
 };
 
+} //namespace Engine
+
 // Defined in client
-Application* CreateApplication(AppCommandLineArgs args);
+Engine::Application* CreateApplication(Engine::AppCommandLineArgs args);

@@ -6,6 +6,8 @@
 #include <core/logger.hpp>
 #include <platform/platform.hpp>
 
+namespace Engine {
+
 Application* Application::sInstance = nullptr;
 
 Window* Window::Create(const WindowProps& props) {
@@ -42,21 +44,21 @@ b8 application_on_key(Event::Code::System code, void* sender, void* listener_ins
 
 Application::Application(const AppSpecification& specification) : mSpecification(specification) {
     if (sInstance) {
-        Logger::Error("Application already exists!");
+        Log::Error("Application already exists!");
         return;
     }
     sInstance = this;
     // Initialize Sub-systems
-    Logger::Initialize();
+    Log::Initialize();
     Input::Initialize();
-    Logger::Fatal("Test format %f", 3.14f);
-    Logger::Error("Test format %f", 3.14f);
-    Logger::Warn("Test format %f", 3.14f);
-    Logger::Info("Test format %f", 3.14f);
-    Logger::Debug("Test format %f", 3.14f);
-    Logger::Trace("Test format %f", 3.14f);
+    Log::Fatal("Test format %f", 3.14f);
+    Log::Error("Test format %f", 3.14f);
+    Log::Warn("Test format %f", 3.14f);
+    Log::Info("Test format %f", 3.14f);
+    Log::Debug("Test format %f", 3.14f);
+    Log::Trace("Test format %f", 3.14f);
     if (!Event::Initialize()) {
-        Logger::Error("Event system failed initialization. Application cannot continue.");
+        Log::Error("Event system failed initialization. Application cannot continue.");
         return;
     }
     Event::Register(Event::Code::System::ApplicationQuit, 0, application_on_event);
@@ -71,38 +73,61 @@ Application::~Application() {
     Event::Unregister(Event::Code::System::KeyReleased, 0, application_on_key);
     Event::Shutdown();
     Input::Shutdown();
-    Logger::Shutdown();
+    Log::Shutdown();
 }
 
 void Application::Run() {
+    mClock.Start();
+    mClock.Update();
+    mLastTime = mClock.TElapse();
+    f64 running_time = 0;
+    u8 frame_count = 0;
+    f64 target_frame_rate = 1.0f / 144;
     while (mRunning) {
         if (!mWindow->OnUpdate()) {
             mRunning = false;
         }
         if (!mSuspended) {
-            if (!Update((f32)0)) {
-                Logger::Fatal("Game update failed, shutting down.");
+            mClock.Update();
+            f64 current_time = mClock.TElapse();
+            f64 delta = (current_time - mLastTime);
+            f64 frame_start_time = platform_get_absolute_time();
+            if (!Update((f32)delta)) {
+                Log::Fatal("Game update failed, shutting down.");
                 Close();
                 break;
             }
-            if (!Render((f32)0)) {
-                Logger::Fatal("Game render failed, shutting down.");
+            if (!Render((f32)delta)) {
+                Log::Fatal("Game render failed, shutting down.");
                 Close();
                 break;
+            }
+            f64 frame_end_time = platform_get_absolute_time();
+            f64 frame_elapsed_time = frame_end_time - frame_start_time;
+            running_time += frame_elapsed_time;
+            f64 remaining_seconds = target_frame_rate - frame_elapsed_time;
+            if (remaining_seconds > 0) {
+                u64 remaining_ms = (remaining_seconds * 1000);
+                b8 limit_frames = false;
+                if (remaining_ms > 0 && limit_frames) {
+                    platform_sleep(remaining_ms - 1);
+                }
+                frame_count++;
             }
 
             // Input update/state copying should always be handled after any input
             // should be recorded; I.E. before this line. As a safety, input is the
             // last thing to be updated before this frame ends.
-            Input::Update(0);
+            Input::Update(delta);
+            mLastTime = current_time;
         }
     }
 }
 
-b8 application_on_event(Event::Code::System code, void* sender, void* listener_inst, Event::Context context) {
+b8 application_on_event(Event::Code::System code, [[maybe_unused]]void* sender, [[maybe_unused]]void* listener_inst, [[maybe_unused]]Event::Context context) {
     switch (code) {
         case Event::Code::System::ApplicationQuit: {
-            Logger::Info("EVENT_CODE_APPLICATION_QUIT received, shutting down.\n");
+            Log::Info("EVENT_CODE_APPLICATION_QUIT received, shutting down.\n");
             Application::Get().Close();
             return true;
         }
@@ -110,7 +135,7 @@ b8 application_on_event(Event::Code::System code, void* sender, void* listener_i
     }
 }
 
-b8 application_on_key(Event::Code::System code, void* sender, void* listener_inst, Event::Context context) {
+b8 application_on_key(Event::Code::System code, [[maybe_unused]]void* sender, [[maybe_unused]]void* listener_inst, Event::Context context) {
     switch (code) {
         case Event::Code::System::KeyPressed: {
             u16 key_code = context.data.d_u16[0];
@@ -119,20 +144,23 @@ b8 application_on_key(Event::Code::System code, void* sender, void* listener_ins
                 Event::Fire(Event::Code::System::ApplicationQuit, 0, data);
                 return true;
             } else if (key_code == Input::Keys::A) {
-                Logger::Debug("Explicit - A key pressed!");
+                Log::Debug("Explicit - A key pressed!");
             } else {
-                Logger::Debug("'%c' key pressed in a window.", key_code);
+                Log::Debug("'%c' key pressed in a window.", key_code);
             }
         } break;
         case Event::Code::System::KeyReleased: {
             u16 key_code = context.data.d_u16[0];
             if (key_code == Input::Keys::B) {
-                Logger::Debug("Explicit - B key released!");
+                Log::Debug("Explicit - B key released!");
             }
             else {
-                Logger::Debug("'%c' key released in a window.", key_code);
+                Log::Debug("'%c' key released in a window.", key_code);
             }
         } break;
+        default: break;
     }
     return false;
 }
+
+} // namespace Engine

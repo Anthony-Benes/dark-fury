@@ -40,12 +40,13 @@ function NewProject(options)
     }
     includedirs {
         projectPath(sourcesPath) .. "/src",
-		table.unpack(extraIncludeDirs)
+        table.unpack(extraIncludeDirs)
     }
     libdirs {
         projectPath("out") .. "/engine/%{cfg.buildcfg}"
     }
     links(extraLinks)
+    defines("DF_VULKAN")
     filter "system:linux"
     pic "On"
     if o_kind == "ConsoleApp" then
@@ -67,9 +68,9 @@ function NewProject(options)
         libdirs {
             vulkan_sdk .. "/Lib"
         }
-    else	
+    else
         postbuildcommands {
-			'xcopy /Q /Y /I "..\\engine\\%{cfg.buildcfg}\\libengine.dll" "$(TargetDir)"'
+            'xcopy /Q /Y /I "..\\engine\\%{cfg.buildcfg}\\libengine.dll" "$(TargetDir)"'
         }
     end
     filter "configurations:Debug"
@@ -86,7 +87,9 @@ function NewProject(options)
     defines(extraDefines)
     filter {}
 end
+startproject "testapp"
 
+local externals = dofile("../engine/external/external.lua")
 local engineLinks = {}
 if os.target() == "windows" then
     engineLinks = { "vulkan-1" }
@@ -99,14 +102,14 @@ elseif os.target() == "linux" then
         "xkbcommon"
     }
 end
-startproject "testapp"
 NewProject {
     name = "engine",
     kind = "SharedLib",
     sourcesPath = "engine",
     defines = { "DF_EXPORT" },
-    links = engineLinks,
-	buildoutputs = "/engine/%{cfg.buildcfg}/libengine.dll"
+    links = table.join(engineLinks, externals.links),
+    buildoutputs = "/engine/%{cfg.buildcfg}/libengine.dll",
+    includedirs = externals.includes
 }
 
 NewProject {

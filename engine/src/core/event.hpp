@@ -2,7 +2,7 @@
 
 #include <defines.hpp>
 
-namespace Event {
+namespace Engine::Event {
 struct Context {
     union {
         i64 d_i64[2];
@@ -43,4 +43,4 @@ typedef b8(*F_on_event)(Code::System code, void* sender, void* listener_inst, Co
     DF_API b8 Unregister(Code::System code, void* listener, F_on_event on_event);
 
     DF_API b8 Fire(Code::System code, void* sender, Context context);
-} // namespace Event
+} // namespace Engine::Event

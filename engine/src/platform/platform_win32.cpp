@@ -1,9 +1,9 @@
-#include "core/input.hpp"
 #include "platform.hpp"
 
 #if DF_PLATFORM_WINDOWS
-#include <core/logger.hpp>
+#include <containers/darray.hpp>
 #include <core/input.hpp>
+#include <core/logger.hpp>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -67,7 +67,7 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
                                   state->h_instance, 0);
     if (handle == 0) {
         MessageBoxA(NULL, "Window creation failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
-        Logger::Fatal("Window creation failed!");
+        Engine::Log::Fatal("Window creation failed!");
         return false;
     }
     state->hwnd = handle;
@@ -134,6 +134,10 @@ f64 platform_get_absolute_time() {
 
 void platform_sleep(u64 ms) { Sleep(static_cast<DWORD>(ms)); }
 
+void platform_get_required_extension_names(Engine::DArray<const char *>*names_darray) {
+    names_darray->push("VK_KHR_win32_surface");
+}
+
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
         case WM_ERASEBKGND:
@@ -156,19 +160,19 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         case WM_KEYUP:
         case WM_SYSKEYUP: {
             b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-            Input::Keys key = static_cast<Input::Keys>(w_param);
-            Input::ProcessKey(key, pressed);
+            Engine::Input::Keys key = static_cast<Engine::Input::Keys>(w_param);
+            Engine::Input::ProcessKey(key, pressed);
         } break;
         case WM_MOUSEMOVE: {
             i32 x_position = GET_X_LPARAM(l_param);
             i32 y_position = GET_Y_LPARAM(l_param);
-            Input::ProcessMouseMove(x_position, y_position);
+            Engine::Input::ProcessMouseMove(x_position, y_position);
         } break;
         case WM_MOUSEWHEEL: {
             i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
             if (z_delta != 0) {
                 z_delta = (z_delta < 0) ? -1 : 1;
-                Input::ProcessMouseWheel(z_delta);
+                Engine::Input::ProcessMouseWheel(z_delta);
             }
         } break;
         case WM_LBUTTONDOWN:
@@ -178,22 +182,22 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         case WM_MBUTTONUP:
         case WM_RBUTTONUP: {
             b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
-            Input::Buttons button;
+            Engine::Input::Buttons button;
             switch (msg) {
                 case WM_LBUTTONDOWN:
                 case WM_LBUTTONUP:
-                    button = Input::Buttons::M_Left;
+                    button = Engine::Input::Buttons::M_Left;
                     break;
                 case WM_MBUTTONDOWN:
                 case WM_MBUTTONUP:
-                    button = Input::Buttons::M_Middle;
+                    button = Engine::Input::Buttons::M_Middle;
                     break;
                 case WM_RBUTTONDOWN:
                 case WM_RBUTTONUP:
-                    button = Input::Buttons::M_Right;
+                    button = Engine::Input::Buttons::M_Right;
                     break;
             }
-            Input::ProcessButton(button, pressed);
+            Engine::Input::ProcessButton(button, pressed);
         } break;
     }
     return DefWindowProcA(hwnd, msg, w_param, l_param);

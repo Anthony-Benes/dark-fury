@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-namespace Memory {
+namespace Engine::Memory {
 struct memory_stats {
     u64 total_allocated;
     u64 tagged_allocations[MaxTags];
@@ -40,7 +40,7 @@ void Shutdown() {}
 
 void* df_allocate(u64 size, Tag tag) {
     if (tag == Tag::UNKNOWN) {
-        Logger::Warn("df_allocate called using Memory::Tag::UNKNOWN. Re-class this allocation.");
+        Log::Warn("df_allocate called using Memory::Tag::UNKNOWN. Re-class this allocation.");
     }
     stats.total_allocated += size;
     stats.tagged_allocations[static_cast<u16>(tag)] += size;
@@ -51,7 +51,7 @@ void* df_allocate(u64 size, Tag tag) {
 
 void df_free(void* block, u64 size, Tag tag) {
     if (tag == Tag::UNKNOWN) {
-        Logger::Warn("df_free called using Memory::Tag::UNKNOWN. Re-class this allocation.");
+        Log::Warn("df_free called using Memory::Tag::UNKNOWN. Re-class this allocation.");
     }
     stats.total_allocated -= size;
     stats.tagged_allocations[static_cast<u16>(tag)] -= size;
@@ -102,4 +102,4 @@ char* get_memory_usage_str() {
     return out_str;
 }
 
-} // namespace Memory
+} // namespace Engine::Memory

@@ -2,7 +2,7 @@
 
 #include <defines.hpp>
 
-namespace Memory {
+namespace Engine::Memory {
 enum class Tag {
     UNKNOWN,
     ARRAY,

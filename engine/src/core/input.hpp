@@ -2,7 +2,7 @@
 
 #include <defines.hpp>
 
-namespace Input {
+namespace Engine::Input {
 #define DF_DEBUG_INPUT 0
 enum Buttons {
     M_Invalid,
