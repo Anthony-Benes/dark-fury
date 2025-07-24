@@ -29,14 +29,20 @@ void Window::Init(const WindowProps& props) {
         startPos.y, mProps.Width, mProps.Height)) {
         return;
     }
+    mRenderer = new Renderer::Frontend(mProps.Title, &mPlatform);
 }
 
 void Window::Shutdown() {
+    delete mRenderer;
     platform_shutdown(&mPlatform);
 }
 
 b8 Window::OnUpdate() {
     return platform_pump_message(&mPlatform);
+}
+
+void Window::OnDraw(Renderer::render_packet* packet) {
+    mRenderer->DrawFrame(packet);
 }
 
 b8 application_on_event(Event::Code::System code, void* sender, void* listener_inst, Event::Context context);
@@ -102,6 +108,9 @@ void Application::Run() {
                 Close();
                 break;
             }
+            Renderer::render_packet packet;
+            packet.delta_time = delta;
+            mWindow->OnDraw(&packet);
             f64 frame_end_time = platform_get_absolute_time();
             f64 frame_elapsed_time = frame_end_time - frame_start_time;
             running_time += frame_elapsed_time;

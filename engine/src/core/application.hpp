@@ -1,9 +1,11 @@
 #pragma once
 
+#include "renderer/renderer_types.inl"
 #include <defines.hpp>
 #include <core/asserts.hpp>
 #include <core/clock.hpp>
 #include <platform/platform.hpp>
+#include <renderer/renderer_frontend.hpp>
 
 int main(int argc, char** argv);
 
@@ -35,6 +37,7 @@ public:
     Window(const WindowProps& props);
     ~Window();
     b8 OnUpdate();
+    void OnDraw(Renderer::render_packet* packet);
     u32 GetWidth() const { return mProps.Width; }
     u32 GetHeight() const { return mProps.Height; }
     static Window* Create(const WindowProps& props = WindowProps());
@@ -43,6 +46,7 @@ private:
     void Shutdown();
     WindowProps mProps;
     platform_state mPlatform;
+    Renderer::Frontend* mRenderer;
 };
 
 class DF_API Application {
