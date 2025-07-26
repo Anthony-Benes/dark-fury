@@ -9,13 +9,16 @@ struct platform_state;
 
 namespace Renderer {
 class Frontend {
-public:
+  public:
     Frontend(const char* application_name, platform_state* plat_state);
+
     ~Frontend() { Shutdown(); }
+
     b8 Initialize(const char* application_name, platform_state* plat_state);
     void Shutdown();
     void OnResized(u16 width, u16 height);
     b8 DrawFrame(render_packet* packet);
-private:
+
+  private:
 };
-} // namespace Renderer
+}  // namespace Renderer

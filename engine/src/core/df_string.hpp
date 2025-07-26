@@ -13,17 +13,13 @@ DF_API b8 strs_eq(const char* str0, const char* str1);
 
 inline char* string_dup(const char* str) {
     auto length = str_len(str);
-    char* copy = (char*)Memory::df_allocate(length + 1, Memory::Tag::STRING);
+    char* copy  = (char*)Memory::df_allocate(length + 1, Memory::Tag::STRING);
     Memory::df_copy_memory(copy, str, length + 1);
     return copy;
 }
 
-inline u64 str_len(const char *str) {
-    return strlen(str);
-}
+inline u64 str_len(const char* str) { return strlen(str); }
 
-inline b8 strs_eq(const char* str0, const char* str1) {
-    return strcmp(str0, str1) == 0;
-}
+inline b8 strs_eq(const char* str0, const char* str1) { return strcmp(str0, str1) == 0; }
 
-} // namespace Engine
+}  // namespace Engine

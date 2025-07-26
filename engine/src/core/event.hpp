@@ -20,27 +20,27 @@ struct Context {
 };
 
 namespace Code {
-    enum class System : u16 {
-        ApplicationQuit = 0x01,
-        KeyPressed = 0x02,
-        KeyReleased = 0x03,
-        ButtonPressed = 0x04,
-        ButtonReleased = 0x05,
-        MouseMoved = 0x06,
-        MouseWheel = 0x07,
-        Resized = 0x08,
-        Invalid = 0xff,
-    };
-} // namespace Code
+enum class System : u16 {
+    ApplicationQuit = 0x01,
+    KeyPressed      = 0x02,
+    KeyReleased     = 0x03,
+    ButtonPressed   = 0x04,
+    ButtonReleased  = 0x05,
+    MouseMoved      = 0x06,
+    MouseWheel      = 0x07,
+    Resized         = 0x08,
+    Invalid         = 0xff,
+};
+}  // namespace Code
 
-typedef b8(*F_on_event)(Code::System code, void* sender, void* listener_inst, Context data);
+typedef b8 (*F_on_event)(Code::System code, void* sender, void* listener_inst, Context data);
 
-    b8 Initialize();
-    void Shutdown();
+b8 Initialize();
+void Shutdown();
 
-    DF_API b8 Register(Code::System code, void* listener, F_on_event on_event);
+DF_API b8 Register(Code::System code, void* listener, F_on_event on_event);
 
-    DF_API b8 Unregister(Code::System code, void* listener, F_on_event on_event);
+DF_API b8 Unregister(Code::System code, void* listener, F_on_event on_event);
 
-    DF_API b8 Fire(Code::System code, void* sender, Context context);
-} // namespace Engine::Event
+DF_API b8 Fire(Code::System code, void* sender, Context context);
+}  // namespace Engine::Event

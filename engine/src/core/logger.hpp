@@ -4,8 +4,8 @@
 
 #include <cstdarg>
 
-#define LOG_WARN_ENABLED 1
-#define LOG_INFO_ENABLED 1
+#define LOG_WARN_ENABLED  1
+#define LOG_INFO_ENABLED  1
 #define LOG_DEBUG_ENABLED 1
 #define LOG_TRACE_ENABLED 1
 
@@ -20,7 +20,7 @@
 namespace Engine {
 
 class DF_API Log {
-public:
+  public:
     static b8 Initialize();
     static void Shutdown();
     static void Fatal(const char* message, ...);
@@ -30,19 +30,13 @@ public:
     static void Debug(const char* message, ...);
     static void Trace(const char* message, ...);
     b8 mRunning = false;
-private:
-  enum class Level {
-    Fatal = 0,
-    Error = 1,
-    Warn = 2,
-    Info = 3,
-    Debug = 4,
-    Trace = 5
-};
+
+  private:
+    enum class Level { Fatal = 0, Error = 1, Warn = 2, Info = 3, Debug = 4, Trace = 5 };
     static Log& Get();
     void log_out(Level level, const char* message, va_list args);
-    Log() = default;
+    Log()  = default;
     ~Log() = default;
 };
 
-} // namespace Engine
+}  // namespace Engine

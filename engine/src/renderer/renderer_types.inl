@@ -15,4 +15,4 @@ namespace Renderer {
 typedef struct render_packet {
     f32 delta_time;
 } render_packet;
-} // namespace Renderer
+}  // namespace Renderer

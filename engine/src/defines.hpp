@@ -37,8 +37,8 @@ STATIC_ASSERT(sizeof(f32) == 4, "f32 should be 4 bytes");
 STATIC_ASSERT(sizeof(f64) == 8, "f64 should be 8 bytes");
 
 struct Point {
-	u32 x;
-	u32 y;
+    u32 x;
+    u32 y;
 };
 
 // Platform detection
@@ -65,7 +65,7 @@ struct Point {
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR
 // iOS Simulator
-#define DF_PLATFORM_IOS 1
+#define DF_PLATFORM_IOS           1
 #define DF_PLATFORM_IOS_SIMULATOR 1
 #elif TARGET_OS_IPHONE
 #define DF_PLATFORM_IOS 1

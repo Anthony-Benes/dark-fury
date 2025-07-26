@@ -4,7 +4,8 @@
 #include <core/asserts.hpp>
 #include <vulkan/vulkan.h>
 
-#define VK_CHECK(expr) { DF_ASSERT(expr == VK_SUCCESS); }
+#define VK_CHECK(expr)                                                                             \
+    { DF_ASSERT(expr == VK_SUCCESS); }
 
 typedef struct vulkan_context {
     VkInstance instance;

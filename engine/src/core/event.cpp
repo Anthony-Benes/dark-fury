@@ -1,8 +1,8 @@
 #include "event.hpp"
 #include "core/logger.hpp"
 
-#include <core/df_memory.hpp>
 #include <containers/darray.hpp>
+#include <core/df_memory.hpp>
 #include <vector>
 
 namespace Engine::Event {
@@ -25,28 +25,22 @@ static b8 is_initialized = false;
 static event_system_state state;
 
 b8 Initialize() {
-    if (is_initialized == true) {
-        return false;
-    }
+    if ( is_initialized == true ) { return false; }
     Memory::df_zero_memory(&state, sizeof(state));
     is_initialized = true;
     return true;
 }
 
 void Shutdown() {
-    for (u16 i = 0; i < MAX_MESSAGE_CODES; i++) {
-        state.registered[i].events.clear();
-    }
+    for ( u16 i = 0; i < MAX_MESSAGE_CODES; i++ ) { state.registered[i].events.clear(); }
 }
 
 b8 Register(Code::System code, void* listener, F_on_event on_event) {
-    if (is_initialized == false) {
-        return false;
-    }
-    auto codeInt = static_cast<u16>(code);
+    if ( is_initialized == false ) { return false; }
+    auto codeInt                     = static_cast<u16>(code);
     DArray<registered_event>& events = state.registered[codeInt].events;
-    for (u64 i = 0; i < events.size(); i++) {
-        if (events[i].listener == listener) {
+    for ( u64 i = 0; i < events.size(); i++ ) {
+        if ( events[i].listener == listener ) {
             Log::Warn("Event has already been registered. Did not create another.");
             return false;
         }
@@ -59,14 +53,12 @@ b8 Register(Code::System code, void* listener, F_on_event on_event) {
 }
 
 b8 Unregister(Code::System code, void* listener, F_on_event on_event) {
-    if (!is_initialized) {
-        return false;
-    }
-    auto codeInt = static_cast<u16>(code);
+    if ( !is_initialized ) { return false; }
+    auto codeInt                     = static_cast<u16>(code);
     DArray<registered_event>& events = state.registered[codeInt].events;
-    for (u64 i = 0; i < events.size(); i++) {
+    for ( u64 i = 0; i < events.size(); i++ ) {
         registered_event e = events[i];
-        if (e.listener == listener && e.callback == on_event) {
+        if ( e.listener == listener && e.callback == on_event ) {
             events.pop_at(i);
             return true;
         }
@@ -76,14 +68,12 @@ b8 Unregister(Code::System code, void* listener, F_on_event on_event) {
 }
 
 b8 Fire(Code::System code, void* sender, Event::Context context) {
-    if (!is_initialized) {
-        return false;
-    }
-    auto codeInt = static_cast<u16>(code);
+    if ( !is_initialized ) { return false; }
+    auto codeInt                     = static_cast<u16>(code);
     DArray<registered_event>& events = state.registered[codeInt].events;
-    for (u64 i = 0; i < events.size(); i++) {
+    for ( u64 i = 0; i < events.size(); i++ ) {
         registered_event e = events[i];
-        if (e.callback(code, sender, e.listener, context)) {
+        if ( e.callback(code, sender, e.listener, context) ) {
             // Message has been handled and consumed. Don't continue sending to other listeners
             return true;
         }
@@ -91,4 +81,4 @@ b8 Fire(Code::System code, void* sender, Event::Context context) {
     return false;
 }
 
-} // namespace Engine::Event
+}  // namespace Engine::Event

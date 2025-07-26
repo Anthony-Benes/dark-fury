@@ -11,6 +11,7 @@
 
 namespace Renderer {
 static Backend* backend = nullptr;
+
 Frontend::Frontend(const char* application_name, platform_state* plat_state) {
     Initialize(application_name, plat_state);
 }
@@ -20,13 +21,11 @@ b8 Frontend::Initialize(const char* application_name, platform_state* plat_state
     return true;
 }
 
-void Frontend::Shutdown() {
-    backend->Shutdown();
-}
+void Frontend::Shutdown() { backend->Shutdown(); }
 
 b8 Frontend::DrawFrame(render_packet* packet) {
-    if (backend->BeginFrame(packet->delta_time)) {
-        if (!backend->EndFrame(packet->delta_time)) {
+    if ( backend->BeginFrame(packet->delta_time) ) {
+        if ( !backend->EndFrame(packet->delta_time) ) {
             Engine::Log::Error("Backend::EndFrame failed. Application shutting down...");
             return false;
         }
@@ -34,4 +33,4 @@ b8 Frontend::DrawFrame(render_packet* packet) {
     return true;
 }
 
-} // namespace Renderer
+}  // namespace Renderer

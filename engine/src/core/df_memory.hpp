@@ -40,4 +40,4 @@ DF_API void* df_set_memory(void* dest, i32 value, u64 size);
 
 DF_API char* get_memory_usage_str();
 
-} // namespace Memory
+}  // namespace Engine::Memory

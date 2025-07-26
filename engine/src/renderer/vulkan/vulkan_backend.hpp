@@ -2,12 +2,12 @@
 
 #include <defines.hpp>
 #include <platform/platform.hpp>
-#include <renderer/renderer_types.inl>
 #include <renderer/renderer_backend.hpp>
+#include <renderer/renderer_types.inl>
 
 namespace Renderer {
 class VulkanBackend : public Backend {
-public:
+  public:
     VulkanBackend(const char* application_name, platform_state* plat_state);
     ~VulkanBackend() = default;
     void Shutdown();
@@ -16,4 +16,4 @@ public:
     b8 BeginFrame(f32 delta_time);
     b8 EndFrame(f32 delta_time);
 };
-} // namespace Renderer
+}  // namespace Renderer

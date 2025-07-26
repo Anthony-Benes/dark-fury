@@ -12,3 +12,4 @@ scripts/premake.json
 compile_commands.json
 DarkFury.sln
 .vs
+.clang-format

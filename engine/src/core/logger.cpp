@@ -1,12 +1,14 @@
-#include <core/logger.hpp>
 #include <core/asserts.hpp>
+#include <core/logger.hpp>
 #include <platform/platform.hpp>
 
 #include <stdio.h>
 #include <string.h>
 
-void report_assertion_failure(const char* expression, const char* message, const char* file, i32 line) {
-    Engine::Log::Fatal("Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression, message, file, line);
+void report_assertion_failure(const char* expression, const char* message, const char* file,
+                              i32 line) {
+    Engine::Log::Fatal("Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression,
+                       message, file, line);
 }
 
 namespace Engine {
@@ -18,7 +20,7 @@ Log& Log::Get() {
 
 b8 Log::Initialize() {
     Log log = Log::Get();
-    if (log.mRunning) {
+    if ( log.mRunning ) {
         // Already initialized. Shouldn't call again.
         return false;
     }
@@ -29,7 +31,7 @@ b8 Log::Initialize() {
 
 void Log::Shutdown() {
     Log log = Log::Get();
-    if (!log.mRunning) {
+    if ( !log.mRunning ) {
         // Not initialized. Can't shut down properly.
         return;
     }
@@ -52,7 +54,7 @@ void Log::Error(const char* message, ...) {
 }
 
 void Log::Warn(const char* message, ...) {
-    if constexpr (LOG_WARN_ENABLED) {
+    if constexpr ( LOG_WARN_ENABLED ) {
         va_list arg_ptr;
         va_start(arg_ptr, message);
         Log::Get().log_out(Level::Warn, message, arg_ptr);
@@ -61,7 +63,7 @@ void Log::Warn(const char* message, ...) {
 }
 
 void Log::Info(const char* message, ...) {
-    if constexpr (LOG_INFO_ENABLED) {
+    if constexpr ( LOG_INFO_ENABLED ) {
         va_list arg_ptr;
         va_start(arg_ptr, message);
         Log::Get().log_out(Level::Info, message, arg_ptr);
@@ -70,7 +72,7 @@ void Log::Info(const char* message, ...) {
 }
 
 void Log::Debug(const char* message, ...) {
-    if constexpr (LOG_DEBUG_ENABLED) {
+    if constexpr ( LOG_DEBUG_ENABLED ) {
         va_list arg_ptr;
         va_start(arg_ptr, message);
         Log::Get().log_out(Level::Debug, message, arg_ptr);
@@ -79,7 +81,7 @@ void Log::Debug(const char* message, ...) {
 }
 
 void Log::Trace(const char* message, ...) {
-    if constexpr (LOG_TRACE_ENABLED) {
+    if constexpr ( LOG_TRACE_ENABLED ) {
         va_list arg_ptr;
         va_start(arg_ptr, message);
         Log::Get().log_out(Level::Trace, message, arg_ptr);
@@ -88,14 +90,9 @@ void Log::Trace(const char* message, ...) {
 }
 
 void Log::log_out(Level level, const char* message, va_list args) {
-    const char* level_strings[6] = {
-                                     "[FATAL]: ",
-                                     "[ERROR]: ",
-                                     "[WARN]:  ",
-                                     "[INFO]:  ",
-                                     "[DEBUG]: ",
-                                     "[TRACE]: " };
-    const auto levelInt = static_cast<u8>(level);
+    const char* level_strings[6] = { "[FATAL]: ", "[ERROR]: ", "[WARN]:  ",
+                                     "[INFO]:  ", "[DEBUG]: ", "[TRACE]: " };
+    const auto levelInt          = static_cast<u8>(level);
 
     const i32 MSG_LENGTH = 32000;
     char buff_message[MSG_LENGTH];
@@ -105,12 +102,11 @@ void Log::log_out(Level level, const char* message, va_list args) {
     char out_message[MSG_LENGTH + 1];
     sprintf(out_message, "%s%s\n", level_strings[levelInt], buff_message);
 
-    if (level <= Level::Error) {
+    if ( level <= Level::Error ) {
         platform_console_write_error(out_message, levelInt);
-    }
-    else {
+    } else {
         platform_console_write(out_message, levelInt);
     }
 }
 
-} // namespace Engine
+}  // namespace Engine

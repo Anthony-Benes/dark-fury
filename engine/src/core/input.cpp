@@ -1,8 +1,8 @@
 #include "defines.hpp"
 #include <core/input.hpp>
 
-#include <core/event.hpp>
 #include <core/df_memory.hpp>
+#include <core/event.hpp>
 #include <core/logger.hpp>
 
 namespace Engine::Input {
@@ -13,7 +13,7 @@ struct keyboard_state {
 struct mouse_state {
     i16 x;
     i16 y;
-    u8 buttons[3]; // Buttons ( Left, Right, Middle )
+    u8 buttons[3];  // Buttons ( Left, Right, Middle )
 };
 
 struct input_state {
@@ -23,7 +23,7 @@ struct input_state {
     mouse_state mouse_previous;
 };
 
-static b8 initialized = false;
+static b8 initialized    = false;
 static input_state state = {};
 
 void Initialize() {
@@ -32,39 +32,39 @@ void Initialize() {
     Log::Info("Input subsystem initialized");
 }
 
-void Shutdown() {
-    initialized = false;
-}
+void Shutdown() { initialized = false; }
 
-void Update([[maybe_unused]]f64 delta_time) {
-    if (!initialized) { return; }
-    Memory::df_copy_memory(&state.keyboard_previous, &state.keyboard_current, sizeof(keyboard_state));
+void Update([[maybe_unused]] f64 delta_time) {
+    if ( !initialized ) { return; }
+    Memory::df_copy_memory(&state.keyboard_previous, &state.keyboard_current,
+                           sizeof(keyboard_state));
     Memory::df_copy_memory(&state.mouse_previous, &state.mouse_current, sizeof(mouse_state));
 }
 
 void ProcessKey(Keys key, b8 pressed) {
-    if (state.keyboard_current.keys[key] != pressed) {
+    if ( state.keyboard_current.keys[key] != pressed ) {
         state.keyboard_current.keys[key] = pressed;
         Event::Context context;
         context.data.d_u16[0] = key;
-        Event::Fire(pressed ? Event::Code::System::KeyPressed : Event::Code::System::KeyReleased, 0, context);
+        Event::Fire(pressed ? Event::Code::System::KeyPressed : Event::Code::System::KeyReleased, 0,
+                    context);
     }
 }
 
 void ProcessButton(Buttons button, b8 pressed) {
-    if (state.mouse_current.buttons[button] != static_cast<u8>(pressed)) {
+    if ( state.mouse_current.buttons[button] != static_cast<u8>(pressed) ) {
         state.mouse_current.buttons[button] = pressed;
         Event::Context context;
         context.data.d_u16[0] = button;
-        Event::Fire(pressed ? Event::Code::System::ButtonPressed : Event::Code::System::ButtonReleased, 0, context);
+        Event::Fire(pressed ? Event::Code::System::ButtonPressed
+                            : Event::Code::System::ButtonReleased,
+                    0, context);
     }
 }
 
 void ProcessMouseMove(i16 x, i16 y) {
-    if (state.mouse_current.x != x || state.mouse_current.y != y) {
-        if constexpr (DF_DEBUG_INPUT) {
-            Log::Debug("Mouse pos: %i, %i!", x, y);
-        }
+    if ( state.mouse_current.x != x || state.mouse_current.y != y ) {
+        if constexpr ( DF_DEBUG_INPUT ) { Log::Debug("Mouse pos: %i, %i!", x, y); }
         state.mouse_current.x = x;
         state.mouse_current.y = y;
         Event::Context context;
@@ -81,47 +81,47 @@ void ProcessMouseWheel(i8 z_delta) {
 }
 
 b8 IsKeyDown(Keys key) {
-    if (!initialized) { return false; }
+    if ( !initialized ) { return false; }
     return state.keyboard_current.keys[key] == true;
 }
 
 b8 IsKeyUp(Keys key) {
-    if (!initialized) { return true; }
+    if ( !initialized ) { return true; }
     return state.keyboard_current.keys[key] == false;
 }
 
 b8 WasKeyDown(Keys key) {
-    if (!initialized) { return false; }
+    if ( !initialized ) { return false; }
     return state.keyboard_previous.keys[key] == true;
 }
 
 b8 WasKeyUp(Keys key) {
-    if (!initialized) { return true; }
+    if ( !initialized ) { return true; }
     return state.keyboard_previous.keys[key] == false;
 }
 
 b8 IsButtonDown(Buttons button) {
-    if (!initialized) { return false; }
+    if ( !initialized ) { return false; }
     return state.mouse_current.buttons[button] == 1;
 }
 
 b8 IsButtonUp(Buttons button) {
-    if (!initialized) { return true; }
+    if ( !initialized ) { return true; }
     return state.mouse_current.buttons[button] == 0;
 }
 
 b8 WasButtonDown(Buttons button) {
-    if (!initialized) { return false; }
+    if ( !initialized ) { return false; }
     return state.mouse_previous.buttons[button] == 1;
 }
 
 b8 WasButtonUp(Buttons button) {
-    if (!initialized) { return true; }
+    if ( !initialized ) { return true; }
     return state.mouse_previous.buttons[button] == 0;
 }
 
 void GetMousePosition(i32* x, i32* y) {
-    if (!initialized) {
+    if ( !initialized ) {
         *x = 0;
         *y = 0;
         return;
@@ -131,7 +131,7 @@ void GetMousePosition(i32* x, i32* y) {
 }
 
 void GetPreviousMousePosition(i32* x, i32* y) {
-    if (!initialized) {
+    if ( !initialized ) {
         *x = 0;
         *y = 0;
         return;
@@ -140,4 +140,4 @@ void GetPreviousMousePosition(i32* x, i32* y) {
     *y = state.mouse_previous.y;
 }
 
-} // namespace Input
+}  // namespace Engine::Input
