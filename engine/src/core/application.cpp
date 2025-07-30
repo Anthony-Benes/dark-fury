@@ -99,14 +99,14 @@ void Application::Run() {
                 break;
             }
             Renderer::render_packet packet;
-            packet.delta_time = delta;
+            packet.delta_time = static_cast<f32>(delta);
             mWindow->OnDraw(&packet);
             f64 frame_end_time     = platform_get_absolute_time();
             f64 frame_elapsed_time = frame_end_time - frame_start_time;
             running_time += frame_elapsed_time;
             f64 remaining_seconds = target_frame_rate - frame_elapsed_time;
             if ( remaining_seconds > 0 ) {
-                u64 remaining_ms = (remaining_seconds * 1000);
+                u64 remaining_ms = static_cast<u64>(remaining_seconds * 1000);
                 b8 limit_frames  = false;
                 if ( remaining_ms > 0 && limit_frames ) { platform_sleep(remaining_ms - 1); }
                 frame_count++;

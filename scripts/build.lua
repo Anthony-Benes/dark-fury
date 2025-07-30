@@ -75,6 +75,7 @@ function NewProject(options)
     end
     filter "configurations:Debug"
     symbols "On"
+    editandcontinue "Off"
     defines {
         "_DEBUG"
     }

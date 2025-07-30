@@ -7,7 +7,7 @@
 
 namespace Engine::Event {
 typedef struct registered_event {
-    void* listener;
+    void* listener = nullptr;
     F_on_event callback;
 } registered_event;
 

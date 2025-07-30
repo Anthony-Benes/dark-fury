@@ -2,7 +2,7 @@
 
 #include <defines.hpp>
 
-class Clock {
+class DF_API Clock {
   public:
     Clock();
     ~Clock() = default;

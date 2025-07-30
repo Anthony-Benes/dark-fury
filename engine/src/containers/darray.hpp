@@ -80,6 +80,7 @@ class DF_API DArray {
     T* mData;
 
     void resize() {
+        if ( mCapacity == 0 ) { mCapacity = DefaultCapacity; }
         u64 newCapacity = mCapacity * ResizeFactor;
         T* newData      = (T*)Memory::df_allocate(newCapacity * sizeof(T), Memory::Tag::DARRAY);
         Memory::df_copy_memory(newData, mData, mSize * sizeof(T));

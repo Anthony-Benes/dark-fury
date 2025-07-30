@@ -26,9 +26,17 @@ void* df_allocate(u64 size, Tag tag) {
     if ( tag == Tag::UNKNOWN ) {
         Log::Warn("df_allocate called using Memory::Tag::UNKNOWN. Re-class this allocation.");
     }
+    if ( size == 0 ) {
+        Log::Error("df_allocate called with size 0. Please check the allocation.");
+        return nullptr;
+    }
     stats.total_allocated += size;
     stats.tagged_allocations[static_cast<u16>(tag)] += size;
     void* block = platform_allocate(size, false);
+    if ( block == nullptr ) {
+        Log::Error("Failed to allocate!");
+        return nullptr;
+    }
     platform_zero_memory(block, size);
     return block;
 }

@@ -5,9 +5,10 @@
 #include <core/input.hpp>
 #include <core/logger.hpp>
 
-#include <stdlib.h>  // TODO: Remove once processing memory differently
 #include <windows.h>
 #include <windowsx.h>
+
+#include <stdlib.h>  // TODO: Remove once processing memory differently
 
 typedef struct internal_state {
     HINSTANCE h_instance;
@@ -23,7 +24,7 @@ b8 platform_startup(platform_state* plat_state, const char* application_name, i3
                     i32 width, i32 height) {
     plat_state->internal_state = platform_allocate(sizeof(internal_state));
     internal_state* state      = (internal_state*)plat_state->internal_state;
-    state->h_instance          = GetModuleHandleA(0);
+    state->h_instance          = GetModuleHandleA(NULL);
     HICON icon                 = LoadIcon(state->h_instance, IDI_APPLICATION);
     WNDCLASSA wc;
     platform_set_memory(&wc, 0, sizeof(wc));

@@ -46,7 +46,8 @@ void ProcessKey(Keys key, b8 pressed) {
         state.keyboard_current.keys[key] = pressed;
         Event::Context context;
         context.data.d_u16[0] = key;
-        Event::Fire(pressed ? Event::Code::System::KeyPressed : Event::Code::System::KeyReleased, 0,
+        Event::Fire(pressed ? Event::Code::System::KeyPressed : Event::Code::System::KeyReleased,
+                    nullptr,
                     context);
     }
 }
@@ -58,7 +59,7 @@ void ProcessButton(Buttons button, b8 pressed) {
         context.data.d_u16[0] = button;
         Event::Fire(pressed ? Event::Code::System::ButtonPressed
                             : Event::Code::System::ButtonReleased,
-                    0, context);
+                    nullptr, context);
     }
 }
 
@@ -70,14 +71,14 @@ void ProcessMouseMove(i16 x, i16 y) {
         Event::Context context;
         context.data.d_u16[0] = x;
         context.data.d_u16[1] = y;
-        Event::Fire(Event::Code::System::MouseMoved, 0, context);
+        Event::Fire(Event::Code::System::MouseMoved, nullptr, context);
     }
 }
 
 void ProcessMouseWheel(i8 z_delta) {
     Event::Context context;
     context.data.d_u8[0] = z_delta;
-    Event::Fire(Event::Code::System::MouseWheel, 0, context);
+    Event::Fire(Event::Code::System::MouseWheel, nullptr, context);
 }
 
 b8 IsKeyDown(Keys key) {
