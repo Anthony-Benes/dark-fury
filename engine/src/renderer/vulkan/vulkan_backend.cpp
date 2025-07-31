@@ -3,6 +3,7 @@
 #include <core/df_string.hpp>
 #include <core/logger.hpp>
 #include <platform/platform.hpp>
+#include <renderer/vulkan/vulkan_device.hpp>
 #include <renderer/vulkan/vulkan_platform.hpp>
 #include <renderer/vulkan/vulkan_types.inl>
 
@@ -107,6 +108,19 @@ b8 VulkanBackend::Initialize(const char* application_name,
       func(context.instance, &debug_create_info, context.allocator, &context.debug_messenger));
     Engine::Log::Debug("Vulkan debugger created.");
 #endif
+
+    Engine::Log::Debug("Creating Vulkan surface...");
+    if ( !platform_create_vulkan_surface(plat_state, &context) ) {
+        Engine::Log::Error("Failed to create platform surface!");
+        return false;
+    }
+    Engine::Log::Debug("Vulkan surface created.");
+
+    if ( !Vulkan::Device::Create(&context) ) {
+        Engine::Log::Error("Failed to create device!");
+        return false;
+    }
+
     Engine::Log::Info("Vulkan renderer initialized successfully.");
     return true;
 }

@@ -10,9 +10,15 @@
 
 #include <stdlib.h>  // TODO: Remove once processing memory differently
 
+// For Vulkan Surface Creation:
+#include <renderer/vulkan/vulkan_types.inl>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_win32.h>
+
 typedef struct internal_state {
     HINSTANCE h_instance;
     HWND hwnd;
+    VkSurfaceKHR surface;
 } internal_state;
 
 static f64 clock_frequency;
@@ -148,6 +154,22 @@ void platform_sleep(u64 ms) { Sleep(static_cast<DWORD>(ms)); }
 
 void platform_get_required_extension_names(Engine::DArray<const char*>* names_darray) {
     names_darray->push("VK_KHR_win32_surface");
+}
+
+b8 platform_create_vulkan_surface(platform_state* plat_state, vulkan_context* context) {
+    internal_state* state                   = (internal_state*)plat_state->internal_state;
+    VkWin32SurfaceCreateInfoKHR create_info = {};
+    create_info.sType                       = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    create_info.hinstance                   = state->h_instance;
+    create_info.hwnd                        = state->hwnd;
+    VkResult result =
+      vkCreateWin32SurfaceKHR(context->instance, &create_info, context->allocator, &state->surface);
+    if ( result != VK_SUCCESS ) {
+        Engine::Log::Fatal("Vulkan surface creation failed.");
+        return false;
+    }
+    context->surface = state->surface;
+    return true;
 }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {

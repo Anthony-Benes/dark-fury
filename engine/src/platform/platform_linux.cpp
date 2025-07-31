@@ -25,6 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+// For Vulkan surface creation
+#define VK_USE_PLATFORM_XCB_KHR
+#include <renderer/vulkan/vulkan_types.inl>
+#include <vulkan/vulkan.h>
+
 typedef struct internal_state {
     Display* display;
     xcb_connection_t* connection;
@@ -32,6 +37,7 @@ typedef struct internal_state {
     xcb_screen_t* screen;
     xcb_atom_t wm_protocols;
     xcb_atom_t wm_delete_win;
+    VkSurfaceKHR surface;
 } internal_state;
 
 Engine::Input::Keys translate_keycode(u32 x_keycode);
@@ -149,12 +155,12 @@ void* platform_copy_memory(void* dest, const void* source, u64 size) {
 void* platform_set_memory(void* dest, i32 value, u64 size) { return memset(dest, value, size); }
 
 void platform_console_write(const char* message, u8 color) {
-    const char* color_strings[] = { "0;41", "1;31", "1;33", "1;32", "1;34", "1;30" };
+    const char* color_strings[] = { "0;41", "1;31", "1;33", "1;32", "1;34", "1;90" };
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 
 void platform_console_write_error(const char* message, u8 color) {
-    const char* color_strings[] = { "0;41", "1;31", "1;33", "1;32", "1;34", "1;30" };
+    const char* color_strings[] = { "0;41", "1;31", "1;33", "1;32", "1;34", "1;90" };
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 
@@ -178,6 +184,22 @@ void platform_sleep(u64 ms) {
 
 void platform_get_required_extension_names(Engine::DArray<const char*>* names_darray) {
     names_darray->push("VK_KHR_xcb_surface");
+}
+
+b8 platform_create_vulkan_surface(platform_state* plat_state, vulkan_context* context) {
+    internal_state* state                 = (internal_state*)plat_state->internal_state;
+    VkXcbSurfaceCreateInfoKHR create_info = {};
+    create_info.sType                     = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+    create_info.connection                = state->connection;
+    create_info.window                    = state->window;
+    VkResult result =
+      vkCreateXcbSurfaceKHR(context->instance, &create_info, context->allocator, &state->surface);
+    if ( result != VK_SUCCESS ) {
+        Engine::Log::Fatal("Vulkan surface creation failed.");
+        return false;
+    }
+    context->surface = state->surface;
+    return true;
 }
 
 Engine::Input::Keys translate_keycode(u32 x_keycode) {
