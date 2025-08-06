@@ -8,7 +8,7 @@
 #define VK_CHECK(expr)                                                                             \
     { DF_ASSERT(expr == VK_SUCCESS); }
 
-typedef struct vulkan_context {
+struct vulkan_context {
     VkInstance instance;
     VkAllocationCallbacks* allocator;
     VkSurfaceKHR surface;
@@ -16,4 +16,4 @@ typedef struct vulkan_context {
     VkDebugUtilsMessengerEXT debug_messenger;
 #endif
     Vulkan::Device* device;
-} vulkan_context;
+};

@@ -126,6 +126,13 @@ b8 VulkanBackend::Initialize(const char* application_name,
 }
 
 void VulkanBackend::Shutdown() {
+    Engine::Log::Debug("Destroying Vulkan device...");
+    Vulkan::Device::Destroy(&context);
+    Engine::Log::Debug("Destroying Vulkan surface...");
+    if ( context.surface ) {
+        vkDestroySurfaceKHR(context.instance, context.surface, context.allocator);
+        context.surface = 0;
+    }
 #if defined(_DEBUG)
     Engine::Log::Debug("Destroying Vulkan debugger...");
     if ( context.debug_messenger ) {

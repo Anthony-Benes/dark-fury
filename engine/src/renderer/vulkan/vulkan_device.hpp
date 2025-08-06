@@ -34,6 +34,8 @@ class Device {
         i32 present_index  = -1;
         i32 compute_index  = -1;
         i32 transfer_index = -1;
+
+        QueueFamilyInfo() = default;
     };
 
   public:
@@ -48,6 +50,9 @@ class Device {
     VkPhysicalDevice physical = VK_NULL_HANDLE;
     VkDevice logical          = VK_NULL_HANDLE;
     QueueFamilyInfo mQueueFamily{};
+    VkQueue mGraphicsQueue = VK_NULL_HANDLE;
+    VkQueue mPresentQueue  = VK_NULL_HANDLE;
+    VkQueue mTransferQueue = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties mProperties{};
     VkPhysicalDeviceFeatures mFeatures{};
     VkPhysicalDeviceMemoryProperties mMemory{};
