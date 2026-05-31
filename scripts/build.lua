@@ -1,5 +1,5 @@
 local vulkan_sdk = os.getenv("VULKAN_SDK")
-if not vulkan_sdk then
+if not vulkan_sdk and os.target() == "windows" then
     error("VULKAN_SDK environment variable is not set!")
 end
 workspace "DarkFury"
@@ -62,12 +62,14 @@ function NewProject(options)
         buildoutputs(projectPath('out') .. options.buildoutputs)
     end
     if o_name == "engine" then
-        includedirs {
-            vulkan_sdk .. "/Include"
-        }
-        libdirs {
-            vulkan_sdk .. "/Lib"
-        }
+        if vulkan_sdk then
+            includedirs {
+                vulkan_sdk .. "/Include"
+            }
+            libdirs {
+                vulkan_sdk .. "/Lib"
+            }
+        end
     else
         postbuildcommands {
             'xcopy /Q /Y /I "..\\engine\\%{cfg.buildcfg}\\libengine.dll" "$(TargetDir)"'

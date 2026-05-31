@@ -50,13 +50,17 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(DEFINED ENV{{VULKAN_SDK}})
-    set(VULKAN_SDK $ENV{{VULKAN_SDK}})
+find_package(Vulkan QUIET)
+if(Vulkan_FOUND)
+    set(DARKFURY_VULKAN_INCLUDE_DIRS ${{Vulkan_INCLUDE_DIRS}})
+elseif(DEFINED ENV{{VULKAN_SDK}})
+    set(DARKFURY_VULKAN_INCLUDE_DIRS $ENV{{VULKAN_SDK}}/include)
 else()
-    message(FATAL_ERROR "VULKAN_SDK environment variable is not set!")
+    message(FATAL_ERROR "Could not find Vulkan. Install Vulkan development "
+   "files or set VULKAN_SDK environment variable.")
 endif()
 
-include_directories(${{VULKAN_SDK}}/include)
+include_directories(${{DARKFURY_VULKAN_INCLUDE_DIRS}})
 
 """)
         for project in projects:
@@ -77,7 +81,7 @@ add_library({name} SHARED
 target_link_libraries({name} PRIVATE {" ".join(links)})
 
 target_include_directories({name} PUBLIC
-    ${{VULKAN_SDK}}/include
+    ${{DARKFURY_VULKAN_INCLUDE_DIRS}}
     ${{CMAKE_CURRENT_SOURCE_DIR}}/src
     {" ".join(includes)}
 )
